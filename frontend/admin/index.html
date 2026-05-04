@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yönetim Paneli – İyilik Derneği</title>
 <link rel="stylesheet" href="/static/css/main.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -156,6 +157,26 @@
             <div class="istat-metin"><div class="sayi" id="stat-bugun">–</div><div class="etiket">Bugün Yüklenen</div></div>
           </div>
         </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div class="kart">
+            <div class="kart-baslik"><h3>📊 En Fazla Görsel Yükleyen Temsilcilikler</h3></div>
+            <div class="kart-icerik" style="padding:16px 20px;">
+              <div id="grafik-yukleniyor" class="yukleniyor-alani"><div class="dongu"></div> Yükleniyor...</div>
+              <canvas id="temsilcilik-grafik" style="display:none;max-height:280px;"></canvas>
+            </div>
+          </div>
+          <div class="kart">
+            <div class="kart-baslik"><h3>📋 Temsilcilik Sıralaması</h3></div>
+            <div class="kart-icerik" style="padding:0;">
+              <table class="veri-tablo" id="siralama-tablo" style="display:none;">
+                <thead><tr><th>#</th><th>Temsilcilik</th><th style="text-align:right;">Görsel</th></tr></thead>
+                <tbody id="siralama-tablo-govde"></tbody>
+              </table>
+              <div id="siralama-yukleniyor" class="yukleniyor-alani"><div class="dongu"></div></div>
+            </div>
+          </div>
+        </div>
+
         <div class="kart">
           <div class="kart-baslik"><h3>Son Yüklenenler</h3></div>
           <div class="kart-icerik" id="son-yuklemeler">
@@ -429,24 +450,104 @@ async function logoKaydet() {
   } catch(e) { toast(e.message, "hata"); }
 }
 
+let grafikOrnek = null;
+
 // ── PANO ──
 async function panoYukle() {
   try {
-    const [temsilcilikler, kullanicilar, gorseller] = await Promise.all([
-      API.temsilcilikler(), API.kullanicilar(), API.gorseller()
+    const [temsilcilikler, kullanicilar, gorseller, istatistik] = await Promise.all([
+      API.temsilcilikler(), API.kullanicilar(), API.gorseller(),
+      fetch("/api/istatistik/temsilcilikler", {
+        headers: { Authorization: "Bearer " + localStorage.getItem("token") }
+      }).then(r => r.json()).catch(() => [])
     ]);
+
     document.getElementById("stat-temsilcilik").textContent = temsilcilikler.length;
     document.getElementById("stat-kullanici").textContent = kullanicilar.filter(k => k.rol === "temsilci").length;
     document.getElementById("stat-gorsel").textContent = gorseller.length;
     const bugun = new Date().toISOString().split("T")[0];
     document.getElementById("stat-bugun").textContent = gorseller.filter(g => g.tarih === bugun).length;
     gorsellerCache = gorseller;
+
+    // ─ Grafik ─
+    grafikCiz(istatistik);
+
+    // ─ Son yüklenenler ─
     const el = document.getElementById("son-yuklemeler");
     const son = gorseller.slice(0, 16);
     el.innerHTML = son.length
       ? `<div class="gorsel-izgarasi">${son.map(g => gorselKartHtml(g)).join("")}</div>`
       : '<div class="bos-durum"><div class="bos-ikn">📭</div><p>Henüz görsel yüklenmedi</p></div>';
   } catch (e) { toast(e.message, "hata"); }
+}
+
+function grafikCiz(veri) {
+  document.getElementById("grafik-yukleniyor").style.display = "none";
+  document.getElementById("siralama-yukleniyor").style.display = "none";
+
+  if (!veri || veri.length === 0) return;
+
+  const canvas = document.getElementById("temsilcilik-grafik");
+  canvas.style.display = "block";
+
+  const renkler = [
+    "#1d4ed8","#2563eb","#3b82f6","#60a5fa","#93c5fd",
+    "#1e40af","#1e3a8a","#7c3aed","#4f46e5","#6366f1"
+  ];
+
+  if (grafikOrnek) grafikOrnek.destroy();
+
+  grafikOrnek = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: veri.map(v => v.temsilcilik),
+      datasets: [{
+        label: "Görsel Sayısı",
+        data: veri.map(v => v.adet),
+        backgroundColor: veri.map((_, i) => renkler[i % renkler.length] + "cc"),
+        borderColor:     veri.map((_, i) => renkler[i % renkler.length]),
+        borderWidth: 1.5,
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.parsed.x} görsel`
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { precision: 0, font: { size: 11 } },
+          grid: { color: "#e2e8f0" }
+        },
+        y: {
+          ticks: { font: { size: 11 } },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+
+  // Sıralama tablosu
+  const tbody = document.getElementById("siralama-tablo-govde");
+  const tablo = document.getElementById("siralama-tablo");
+  tablo.style.display = "table";
+  tbody.innerHTML = veri.map((v, i) => `
+    <tr>
+      <td style="color:var(--metin-ucuncul);font-size:.8rem;font-weight:700;width:32px;">${i + 1}</td>
+      <td><strong>${v.temsilcilik}</strong></td>
+      <td style="text-align:right;">
+        <span class="rozet ${v.adet > 0 ? "rozet-mavi" : "rozet-gri"}">${v.adet}</span>
+      </td>
+    </tr>`).join("");
 }
 
 // ── GALERİ ──

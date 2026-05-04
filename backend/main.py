@@ -302,6 +302,22 @@ def gorsel_listesi(
     return sorgu.order_by(models.Gorsel.yuklenme_tarihi.desc()).all()
 
 
+@app.get("/api/istatistik/temsilcilikler")
+def temsilcilik_istatistik(
+    db: Session = Depends(get_db),
+    _: models.Kullanici = Depends(admin_gerektir),
+):
+    from sqlalchemy import func
+    sonuc = (
+        db.query(models.Temsilcilik.ad, func.count(models.Gorsel.id).label("adet"))
+        .join(models.Gorsel, models.Gorsel.temsilcilik_id == models.Temsilcilik.id, isouter=True)
+        .group_by(models.Temsilcilik.id)
+        .order_by(func.count(models.Gorsel.id).desc())
+        .all()
+    )
+    return [{"temsilcilik": ad, "adet": adet} for ad, adet in sonuc]
+
+
 @app.get("/api/gorseller/takvim")
 def gorsel_takvim(
     db: Session = Depends(get_db),
