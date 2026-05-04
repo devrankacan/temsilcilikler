@@ -1,0 +1,25 @@
+# Ortam değişkenleri — asla commit etme!
+.env
+
+# Yüklenen görseller
+uploads/
+
+# Veritabanı
+data/
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
