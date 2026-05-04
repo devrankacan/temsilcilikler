@@ -64,7 +64,7 @@ const API = (() => {
       return new Promise((resolve, reject) => {
         const form = new FormData();
         form.append("dosya", dosya);
-        if (notMetni) form.append("baslik", notMetni);
+        form.append("baslik", notMetni || "");
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", BASE + "/gorseller");
@@ -89,22 +89,6 @@ const API = (() => {
     },
   };
 })();
-
-// ─── Toast ───
-function toast(mesaj, tip = "basari") {
-  const wrap = document.getElementById("toast-wrap") || (() => {
-    const el = document.createElement("div");
-    el.id = "toast-wrap";
-    el.className = "toast-wrap";
-    document.body.appendChild(el);
-    return el;
-  })();
-  const el = document.createElement("div");
-  el.className = `toast toast-${tip}`;
-  el.textContent = mesaj;
-  wrap.appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
 
 // ─── Auth yardımcıları ───
 function mevcutKullanici() {

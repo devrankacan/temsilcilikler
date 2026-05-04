@@ -3,149 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Paneli – İyilik Derneği</title>
+<title>Yönetim Paneli – İyilik Derneği</title>
 <link rel="stylesheet" href="/static/css/main.css">
-<style>
-  .bos-durum { text-align:center; padding:40px; color:var(--gri-koyu); }
-  .bos-durum .ikn { font-size:2.5rem; margin-bottom:8px; }
-  .sehir-blok { margin-bottom:28px; }
-  .sehir-baslik {
-    font-size:1rem; font-weight:700;
-    color:var(--beyaz);
-    background: var(--yesil);
-    padding:8px 16px;
-    border-radius:var(--radius-kucuk);
-    margin-bottom:12px;
-    display:flex; align-items:center; gap:8px;
-  }
-</style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="giris-ekrani" class="login-wrap">
-  <div class="login-kart">
-    <div class="logo"><div style="font-size:3rem;">🌿</div></div>
-    <h1>İyilik Derneği</h1>
-    <p class="alt">Admin Paneli</p>
-    <form id="giris-form">
-      <div class="form-grup">
-        <label>Kullanıcı Adı</label>
-        <input type="text" id="giris-adi" placeholder="admin" required>
+<!-- ══════════════════ GİRİŞ ══════════════════ -->
+<div id="giris-ekrani" class="giris-sayfa">
+  <div class="giris-sol">
+    <div class="giris-sol-icerik">
+      <div class="giris-logo">
+        <div class="amblemi">🌿</div>
+        <div>
+          <h1>İyilik Derneği</h1>
+          <p>Temsilcilik Yönetim Sistemi</p>
+        </div>
       </div>
-      <div class="form-grup">
-        <label>Şifre</label>
-        <input type="password" id="giris-sifre" placeholder="••••••••" required>
-      </div>
-      <p id="giris-hata" style="color:var(--kirmizi);font-size:.85rem;margin-bottom:12px;display:none;"></p>
-      <button type="submit" class="btn btn-yesil btn-tam">Giriş Yap</button>
-    </form>
+      <p class="giris-manset">Temsilciliklerinizi<br><span>tek panelden</span> yönetin.</p>
+      <p class="giris-alt-metin">Faaliyet görsellerini şehir ve başlık bazında düzenleyin, temsilcilerinizi takip edin.</p>
+    </div>
+  </div>
+  <div class="giris-sag">
+    <div class="giris-kutu">
+      <h2>Yönetici Girişi</h2>
+      <p class="alt-baslik">Hesabınıza giriş yapın</p>
+      <form id="giris-form">
+        <div class="form-alan">
+          <label>Kullanıcı Adı</label>
+          <input type="text" id="giris-adi" placeholder="admin" required autocomplete="username">
+        </div>
+        <div class="form-alan">
+          <label>Şifre</label>
+          <input type="password" id="giris-sifre" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="giris-hata" style="display:none;padding:10px 13px;background:var(--hata-soluk);border:1px solid #fecaca;border-radius:var(--r-sm);font-size:.84rem;color:var(--hata);margin-bottom:14px;"></div>
+        <button type="submit" class="btn btn-birincil btn-tam btn-lg">Giriş Yap</button>
+      </form>
+    </div>
   </div>
 </div>
 
-<!-- ANA PANEL -->
-<div id="panel-ekrani" class="ana-layout" style="display:none;">
+<!-- ══════════════════ PANEL ══════════════════ -->
+<div id="panel-ekrani" class="panel-layout" style="display:none;">
 
-  <nav class="kenar-cubuk">
-    <div class="kenar-logo">
-      <div style="font-size:1.8rem;margin-bottom:6px;">🌿</div>
-      <h2>İyilik Derneği</h2>
-      <p>Yönetim Paneli</p>
-    </div>
-    <div class="kenar-nav">
-      <a href="#" data-sayfa="pano" class="aktif"><span class="ikn">📊</span> Pano</a>
-      <a href="#" data-sayfa="galeri"><span class="ikn">🖼️</span> Galeri</a>
-      <a href="#" data-sayfa="temsilcilikler"><span class="ikn">🏢</span> Temsilcilikler</a>
-      <a href="#" data-sayfa="kullanicilar"><span class="ikn">👥</span> Kullanıcılar</a>
-    </div>
-    <div class="kenar-alt">
-      <div id="kenar-kullanici">–</div>
-      <a href="#" onclick="cikisYap()" style="color:rgba(255,255,255,.7);font-size:.82rem;text-decoration:none;margin-top:6px;display:block;">🚪 Çıkış</a>
-    </div>
-  </nav>
-
-  <div class="icerik-alani">
-    <div class="ust-bar">
-      <h1 id="sayfa-baslik">Pano</h1>
-      <div class="kullanici-bilgi">
-        <div class="avatar" id="kullanici-avatar">A</div>
-        <div>
-          <div id="kullanici-adi-goster" style="font-weight:600;font-size:.88rem;">–</div>
-          <div style="font-size:.75rem;color:var(--gri-koyu);">Admin</div>
+  <!-- Kenar Çubuk -->
+  <aside class="kenar-cubuk">
+    <div class="kenar-ust">
+      <div class="kenar-logo-satir">
+        <div class="kenar-amblemi">🌿</div>
+        <div class="kenar-kurum">
+          <h2>İyilik Derneği</h2>
+          <p>Yönetim Paneli</p>
         </div>
       </div>
     </div>
+    <nav class="kenar-nav">
+      <div class="kenar-nav-baslik">Genel</div>
+      <a href="#" data-sayfa="pano" class="aktif"><span class="nav-ikn">📊</span> Pano</a>
+      <a href="#" data-sayfa="galeri"><span class="nav-ikn">🖼️</span> Galeri</a>
+      <div class="kenar-nav-baslik">Yönetim</div>
+      <a href="#" data-sayfa="temsilcilikler"><span class="nav-ikn">🏢</span> Temsilcilikler</a>
+      <a href="#" data-sayfa="kullanicilar"><span class="nav-ikn">👥</span> Kullanıcılar</a>
+    </nav>
+    <div class="kenar-alt">
+      <div class="kenar-kullanici">
+        <div class="kenar-avatar" id="kenar-avatar">A</div>
+        <div class="kenar-kullanici-bilgi">
+          <div class="isim" id="kenar-isim">–</div>
+          <div class="rol">Yönetici</div>
+        </div>
+      </div>
+      <button class="cikis-btn" onclick="cikisYap()">🚪 Çıkış Yap</button>
+    </div>
+  </aside>
 
-    <div class="sayfa-icerik">
+  <!-- Ana İçerik -->
+  <div class="icerik-alani">
+    <header class="ust-cubuk">
+      <div class="ust-cubuk-sol">
+        <div class="breadcrumb">
+          <span>İyilik Derneği</span>
+          <span class="ayirac">›</span>
+          <span class="mevcut" id="sayfa-baslik">Pano</span>
+        </div>
+      </div>
+      <div class="ust-cubuk-sag">
+        <div class="ust-kullanici">
+          <div class="ust-avatar" id="ust-avatar">A</div>
+          <div class="ust-kullanici-metin">
+            <div class="isim" id="ust-isim">–</div>
+            <div class="detay">Yönetici</div>
+          </div>
+        </div>
+      </div>
+    </header>
 
-      <!-- PANO -->
+    <main class="sayfa-icerik">
+
+      <!-- ── PANO ── -->
       <div id="sayfa-pano">
-        <div class="stat-grid">
-          <div class="stat-kutu"><div class="sayi" id="stat-temsilcilik">–</div><div class="etiket">Temsilcilik</div></div>
-          <div class="stat-kutu"><div class="sayi" id="stat-kullanici">–</div><div class="etiket">Temsilci</div></div>
-          <div class="stat-kutu"><div class="sayi" id="stat-gorsel">–</div><div class="etiket">Toplam Görsel</div></div>
-          <div class="stat-kutu"><div class="sayi" id="stat-bugun">–</div><div class="etiket">Bugün Yüklenen</div></div>
+        <div class="istatistik-sira">
+          <div class="istat-kutu">
+            <div class="istat-ikn yesil">🏢</div>
+            <div class="istat-metin"><div class="sayi" id="stat-temsilcilik">–</div><div class="etiket">Temsilcilik</div></div>
+          </div>
+          <div class="istat-kutu">
+            <div class="istat-ikn mavi">👥</div>
+            <div class="istat-metin"><div class="sayi" id="stat-kullanici">–</div><div class="etiket">Temsilci</div></div>
+          </div>
+          <div class="istat-kutu">
+            <div class="istat-ikn sari">🖼️</div>
+            <div class="istat-metin"><div class="sayi" id="stat-gorsel">–</div><div class="etiket">Toplam Görsel</div></div>
+          </div>
+          <div class="istat-kutu">
+            <div class="istat-ikn mor">📅</div>
+            <div class="istat-metin"><div class="sayi" id="stat-bugun">–</div><div class="etiket">Bugün Yüklenen</div></div>
+          </div>
         </div>
         <div class="kart">
-          <div class="kart-baslik">Son Yüklenenler</div>
-          <div id="son-yuklemeler"><div class="yukleniyor"><div class="spinner"></div> Yükleniyor...</div></div>
+          <div class="kart-baslik"><h3>Son Yüklenenler</h3></div>
+          <div class="kart-icerik" id="son-yuklemeler">
+            <div class="yukleniyor-alani"><div class="dongu"></div> Yükleniyor...</div>
+          </div>
         </div>
       </div>
 
-      <!-- GALERİ -->
+      <!-- ── GALERİ ── -->
       <div id="sayfa-galeri" style="display:none;">
-        <div class="filtre-bar">
-          <div class="form-grup">
+        <div class="filtre-cubugu">
+          <div class="form-alan">
             <label>Tarih</label>
             <input type="date" id="filtre-tarih">
           </div>
-          <div class="form-grup">
+          <div class="form-alan">
             <label>Şehir</label>
-            <input type="text" id="filtre-sehir" placeholder="Şehir adı...">
+            <input type="text" id="filtre-sehir" placeholder="Şehir adı..." style="width:150px;">
           </div>
-          <div class="form-grup">
+          <div class="form-alan">
             <label>Temsilcilik</label>
-            <select id="filtre-temsilcilik">
+            <select id="filtre-temsilcilik" style="width:170px;">
               <option value="">Tümü</option>
             </select>
           </div>
-          <button class="btn btn-yesil" onclick="galeriYukle()">🔍 Filtrele</button>
-          <button class="btn btn-gri" onclick="filtreTemizle()">✕ Temizle</button>
+          <button class="btn btn-birincil" onclick="galeriYukle()">Filtrele</button>
+          <button class="btn btn-ikincil" onclick="filtreTemizle()">Temizle</button>
         </div>
-        <div id="galeri-icerik"><div class="yukleniyor"><div class="spinner"></div> Yükleniyor...</div></div>
+        <div id="galeri-icerik">
+          <div class="yukleniyor-alani"><div class="dongu"></div> Yükleniyor...</div>
+        </div>
       </div>
 
-      <!-- TEMSİLCİLİKLER -->
+      <!-- ── TEMSİLCİLİKLER ── -->
       <div id="sayfa-temsilcilikler" style="display:none;">
         <div class="kart">
           <div class="kart-baslik">
-            Temsilcilikler
-            <button class="btn btn-yesil" onclick="temsilcilikModalAc()">+ Yeni Temsilcilik</button>
+            <h3>Temsilcilikler</h3>
+            <button class="btn btn-birincil btn-sm" onclick="temsilcilikModalAc()">+ Yeni Temsilcilik</button>
           </div>
-          <div class="tablo-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Ad</th><th>Açıklama</th><th>Durum</th><th>İşlem</th></tr></thead>
+          <div class="tablo-konteyner">
+            <table class="veri-tablo">
+              <thead><tr><th>#</th><th>Temsilcilik Adı</th><th>Açıklama</th><th>Durum</th><th></th></tr></thead>
               <tbody id="temsilcilik-tablo"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- KULLANICILAR -->
+      <!-- ── KULLANICILAR ── -->
       <div id="sayfa-kullanicilar" style="display:none;">
         <div class="kart">
           <div class="kart-baslik">
-            Kullanıcılar
-            <button class="btn btn-yesil" onclick="kullaniciModalAc()">+ Yeni Kullanıcı</button>
+            <h3>Kullanıcılar</h3>
+            <button class="btn btn-birincil btn-sm" onclick="kullaniciModalAc()">+ Yeni Kullanıcı</button>
           </div>
-          <div class="tablo-wrap">
-            <table>
+          <div class="tablo-konteyner">
+            <table class="veri-tablo">
               <thead>
-                <tr>
-                  <th>#</th><th>Ad Soyad</th><th>Kullanıcı Adı</th>
-                  <th>Şehir</th><th>Rol</th><th>Temsilcilik</th>
-                  <th>Durum</th><th>İşlem</th>
-                </tr>
+                <tr><th>#</th><th>Ad Soyad</th><th>Kullanıcı Adı</th><th>Şehir</th><th>Rol</th><th>Temsilcilik</th><th>Durum</th><th></th></tr>
               </thead>
               <tbody id="kullanici-tablo"></tbody>
             </table>
@@ -153,109 +187,103 @@
         </div>
       </div>
 
-    </div>
+    </main>
   </div>
 </div>
 
-<!-- MODAL: Temsilcilik -->
+<!-- ══════ MODAL: Temsilcilik ══════ -->
 <div class="modal-arka" id="temsilcilik-modal">
-  <div class="modal">
-    <div class="modal-baslik">
-      <span id="temsilcilik-modal-baslik">Temsilcilik Ekle</span>
-      <button class="modal-kapat" onclick="modalKapat('temsilcilik-modal')">✕</button>
+  <div class="modal-kutu">
+    <div class="modal-ust">
+      <h2 id="temsilcilik-modal-baslik">Yeni Temsilcilik</h2>
+      <button class="modal-kapat-btn" onclick="modalKapat('temsilcilik-modal')">✕</button>
     </div>
-    <div class="modal-icerik">
+    <div class="modal-govde">
       <input type="hidden" id="temsilcilik-id">
-      <div class="form-grup"><label>Ad *</label><input type="text" id="temsilcilik-ad" placeholder="Temsilcilik adı"></div>
-      <div class="form-grup"><label>Açıklama</label><textarea id="temsilcilik-aciklama" placeholder="İsteğe bağlı..."></textarea></div>
+      <div class="form-alan"><label>Ad *</label><input type="text" id="temsilcilik-ad" placeholder="Temsilcilik adı"></div>
+      <div class="form-alan"><label>Açıklama</label><textarea id="temsilcilik-aciklama" placeholder="İsteğe bağlı..."></textarea></div>
     </div>
     <div class="modal-alt">
-      <button class="btn btn-gri" onclick="modalKapat('temsilcilik-modal')">İptal</button>
-      <button class="btn btn-yesil" onclick="temsilcilikKaydet()">Kaydet</button>
+      <button class="btn btn-ikincil" onclick="modalKapat('temsilcilik-modal')">İptal</button>
+      <button class="btn btn-birincil" onclick="temsilcilikKaydet()">Kaydet</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Kullanıcı -->
+<!-- ══════ MODAL: Kullanıcı ══════ -->
 <div class="modal-arka" id="kullanici-modal">
-  <div class="modal">
-    <div class="modal-baslik">
-      <span id="kullanici-modal-baslik">Kullanıcı Ekle</span>
-      <button class="modal-kapat" onclick="modalKapat('kullanici-modal')">✕</button>
+  <div class="modal-kutu">
+    <div class="modal-ust">
+      <h2 id="kullanici-modal-baslik">Yeni Kullanıcı</h2>
+      <button class="modal-kapat-btn" onclick="modalKapat('kullanici-modal')">✕</button>
     </div>
-    <div class="modal-icerik">
+    <div class="modal-govde">
       <input type="hidden" id="kullanici-id">
-      <div class="form-grup"><label>Ad Soyad *</label><input type="text" id="kullanici-ad-soyad" placeholder="Ad Soyad"></div>
-      <div class="form-grup"><label>Kullanıcı Adı *</label><input type="text" id="kullanici-adi" placeholder="kullanici_adi"></div>
-      <div class="form-grup">
-        <label>Şifre <span id="sifre-aciklama"></span></label>
+      <div class="form-alan"><label>Ad Soyad *</label><input type="text" id="kullanici-ad-soyad" placeholder="Ad Soyad"></div>
+      <div class="form-alan"><label>Kullanıcı Adı *</label><input type="text" id="kullanici-adi" placeholder="kullanici_adi"></div>
+      <div class="form-alan">
+        <label>Şifre <span id="sifre-aciklama" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.75rem;color:var(--metin-ucuncul);"></span></label>
         <input type="password" id="kullanici-sifre" placeholder="••••••••">
       </div>
-      <div class="form-grup">
+      <div class="form-alan">
         <label>Rol *</label>
         <select id="kullanici-rol" onchange="rolDegisti()">
           <option value="temsilci">Temsilci</option>
-          <option value="admin">Admin</option>
+          <option value="admin">Yönetici</option>
         </select>
       </div>
       <div id="temsilci-alanlari">
-        <div class="form-grup">
-          <label>Şehir *</label>
-          <input type="text" id="kullanici-sehir" placeholder="İstanbul, Ankara, İzmir...">
-        </div>
-        <div class="form-grup">
+        <div class="form-alan"><label>Şehir *</label><input type="text" id="kullanici-sehir" placeholder="İstanbul, Ankara, İzmir..."></div>
+        <div class="form-alan">
           <label>Temsilcilik *</label>
-          <select id="kullanici-temsilcilik">
-            <option value="">Seçiniz...</option>
-          </select>
+          <select id="kullanici-temsilcilik"><option value="">Seçiniz...</option></select>
         </div>
       </div>
     </div>
     <div class="modal-alt">
-      <button class="btn btn-gri" onclick="modalKapat('kullanici-modal')">İptal</button>
-      <button class="btn btn-yesil" onclick="kullaniciKaydet()">Kaydet</button>
+      <button class="btn btn-ikincil" onclick="modalKapat('kullanici-modal')">İptal</button>
+      <button class="btn btn-birincil" onclick="kullaniciKaydet()">Kaydet</button>
     </div>
   </div>
 </div>
 
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="lightboxKapat()">
-  <button class="lb-kapat" onclick="lightboxKapat()">✕</button>
-  <img id="lb-img" src="" alt="">
-  <div class="lb-alt">
-    <div id="lb-baslik" style="font-weight:600;margin-bottom:4px;"></div>
-    <div id="lb-not" style="opacity:.85;"></div>
-    <div id="lb-meta" style="opacity:.6;font-size:.8rem;margin-top:4px;"></div>
-    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;">
-      <button class="btn btn-mavi" onclick="event.stopPropagation();notDuzenleAc()">✏️ Başlık Düzenle</button>
-      <a id="lb-indir" href="#" download class="btn btn-gri" onclick="event.stopPropagation()">⬇️ İndir</a>
-      <button class="btn btn-kirmizi" onclick="event.stopPropagation();gorselSilOnay()">🗑️ Sil</button>
+<!-- ══════ MODAL: Başlık Düzenle ══════ -->
+<div class="modal-arka" id="baslik-modal">
+  <div class="modal-kutu">
+    <div class="modal-ust">
+      <h2>Başlık Düzenle</h2>
+      <button class="modal-kapat-btn" onclick="modalKapat('baslik-modal')">✕</button>
     </div>
-  </div>
-</div>
-
-<!-- MODAL: Başlık -->
-<div class="modal-arka" id="not-modal">
-  <div class="modal">
-    <div class="modal-baslik">
-      Başlık Düzenle
-      <button class="modal-kapat" onclick="modalKapat('not-modal')">✕</button>
-    </div>
-    <div class="modal-icerik">
-      <input type="hidden" id="not-gorsel-id">
-      <div class="form-grup">
-        <label>Başlık</label>
-        <textarea id="not-metin" placeholder="Görsel başlığı..."></textarea>
+    <div class="modal-govde">
+      <input type="hidden" id="baslik-gorsel-id">
+      <div class="form-alan">
+        <label>Başlık *</label>
+        <input type="text" id="baslik-metin" placeholder="Görsel başlığı...">
       </div>
     </div>
     <div class="modal-alt">
-      <button class="btn btn-gri" onclick="modalKapat('not-modal')">İptal</button>
-      <button class="btn btn-yesil" onclick="notKaydet()">Kaydet</button>
+      <button class="btn btn-ikincil" onclick="modalKapat('baslik-modal')">İptal</button>
+      <button class="btn btn-birincil" onclick="baslikKaydet()">Kaydet</button>
     </div>
   </div>
 </div>
 
-<div id="toast-wrap" class="toast-wrap"></div>
+<!-- ══════ LİGHTBOX ══════ -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-kapat-btn" onclick="lightboxKapat()">✕</button>
+  <img class="lb-gorsel" id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  <div class="lb-bilgi-alani">
+    <div class="lb-baslik-metin" id="lb-baslik"></div>
+    <div class="lb-alt-metin" id="lb-meta"></div>
+    <div class="lb-aksiyonlar">
+      <button class="btn btn-bilgi btn-sm" onclick="baslikDuzenleAc()">✏️ Başlık Düzenle</button>
+      <a id="lb-indir" href="#" download class="btn btn-ikincil btn-sm">⬇️ İndir</a>
+      <button class="btn btn-tehlike btn-sm" onclick="gorselSilOnay()">🗑️ Sil</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-konteyner" class="toast-konteyner"></div>
 
 <script src="/static/js/api.js"></script>
 <script>
@@ -265,8 +293,8 @@ let temsilciliklerCache = [];
 let gorsellerCache = [];
 let kullanicilerCache = [];
 
-// ─── Init ───
-(async function init() {
+// ── Init ──
+(async function() {
   const k = mevcutKullanici();
   if (k && k.rol === "admin" && localStorage.getItem("token")) panelAc(k);
   else document.getElementById("giris-ekrani").style.display = "flex";
@@ -277,18 +305,17 @@ document.getElementById("giris-form").addEventListener("submit", async (e) => {
   const hataEl = document.getElementById("giris-hata");
   hataEl.style.display = "none";
   try {
-    const sonuc = await API.girisYap(
+    const r = await API.girisYap(
       document.getElementById("giris-adi").value,
       document.getElementById("giris-sifre").value
     );
-    if (sonuc.kullanici.rol !== "admin") {
-      hataEl.textContent = "Bu panel yalnızca adminlere açıktır.";
-      hataEl.style.display = "block";
-      return;
+    if (r.kullanici.rol !== "admin") {
+      hataEl.textContent = "Bu panel yalnızca yöneticilere açıktır.";
+      hataEl.style.display = "block"; return;
     }
-    localStorage.setItem("token", sonuc.access_token);
-    localStorage.setItem("kullanici", JSON.stringify(sonuc.kullanici));
-    panelAc(sonuc.kullanici);
+    localStorage.setItem("token", r.access_token);
+    localStorage.setItem("kullanici", JSON.stringify(r.kullanici));
+    panelAc(r.kullanici);
   } catch (err) {
     hataEl.textContent = err.message;
     hataEl.style.display = "block";
@@ -298,15 +325,17 @@ document.getElementById("giris-form").addEventListener("submit", async (e) => {
 function panelAc(k) {
   document.getElementById("giris-ekrani").style.display = "none";
   document.getElementById("panel-ekrani").style.display = "flex";
-  document.getElementById("kullanici-adi-goster").textContent = k.ad_soyad;
-  document.getElementById("kullanici-avatar").textContent = k.ad_soyad[0].toUpperCase();
-  document.getElementById("kenar-kullanici").textContent = k.ad_soyad;
+  const ilk = k.ad_soyad[0].toUpperCase();
+  document.getElementById("kenar-isim").textContent = k.ad_soyad;
+  document.getElementById("kenar-avatar").textContent = ilk;
+  document.getElementById("ust-isim").textContent = k.ad_soyad;
+  document.getElementById("ust-avatar").textContent = ilk;
   sayfaYukle("pano");
 }
 
-// ─── Sayfa Gezinti ───
+// ── Sayfa Gezinti ──
 document.querySelectorAll(".kenar-nav a[data-sayfa]").forEach(a => {
-  a.addEventListener("click", (e) => {
+  a.addEventListener("click", e => {
     e.preventDefault();
     document.querySelectorAll(".kenar-nav a").forEach(x => x.classList.remove("aktif"));
     a.classList.add("aktif");
@@ -317,17 +346,17 @@ document.querySelectorAll(".kenar-nav a[data-sayfa]").forEach(a => {
 function sayfaYukle(sayfa) {
   aktifSayfa = sayfa;
   const basliklar = { pano:"Pano", galeri:"Galeri", temsilcilikler:"Temsilcilikler", kullanicilar:"Kullanıcılar" };
-  document.getElementById("sayfa-baslik").textContent = basliklar[sayfa] || sayfa;
-  ["pano","galeri","temsilcilikler","kullanicilar"].forEach(s => {
-    document.getElementById("sayfa-" + s).style.display = s === sayfa ? "block" : "none";
-  });
+  document.getElementById("sayfa-baslik").textContent = basliklar[sayfa];
+  ["pano","galeri","temsilcilikler","kullanicilar"].forEach(s =>
+    document.getElementById("sayfa-" + s).style.display = s === sayfa ? "block" : "none"
+  );
   if (sayfa === "pano") panoYukle();
   else if (sayfa === "galeri") galeriInit().then(() => galeriYukle());
   else if (sayfa === "temsilcilikler") temsilciliklerYukle();
   else if (sayfa === "kullanicilar") { kullanicilariYukle(); temsilciliklerIcinYukle(); }
 }
 
-// ─── PANO ───
+// ── PANO ──
 async function panoYukle() {
   try {
     const [temsilcilikler, kullanicilar, gorseller] = await Promise.all([
@@ -339,76 +368,68 @@ async function panoYukle() {
     const bugun = new Date().toISOString().split("T")[0];
     document.getElementById("stat-bugun").textContent = gorseller.filter(g => g.tarih === bugun).length;
     gorsellerCache = gorseller;
-
-    const sonEl = document.getElementById("son-yuklemeler");
-    const son = gorseller.slice(0, 12);
-    sonEl.innerHTML = son.length
-      ? `<div class="gorsel-grid">${son.map(g => gorselKartHtml(g)).join("")}</div>`
-      : '<div class="bos-durum"><div class="ikn">📭</div><p>Henüz görsel yüklenmedi</p></div>';
+    const el = document.getElementById("son-yuklemeler");
+    const son = gorseller.slice(0, 16);
+    el.innerHTML = son.length
+      ? `<div class="gorsel-izgarasi">${son.map(g => gorselKartHtml(g)).join("")}</div>`
+      : '<div class="bos-durum"><div class="bos-ikn">📭</div><p>Henüz görsel yüklenmedi</p></div>';
   } catch (e) { toast(e.message, "hata"); }
 }
 
-// ─── GALERİ ───
+// ── GALERİ ──
 async function galeriInit() {
-  const temsilcilikler = await API.temsilcilikler().catch(() => []);
-  temsilciliklerCache = temsilcilikler;
+  const liste = await API.temsilcilikler().catch(() => []);
+  temsilciliklerCache = liste;
   const sel = document.getElementById("filtre-temsilcilik");
-  sel.innerHTML = '<option value="">Tümü</option>' +
-    temsilcilikler.map(t => `<option value="${t.id}">${t.ad}</option>`).join("");
+  sel.innerHTML = '<option value="">Tümü</option>' + liste.map(t => `<option value="${t.id}">${t.ad}</option>`).join("");
 }
 
 async function galeriYukle() {
   const tarih = document.getElementById("filtre-tarih").value;
-  const tid = document.getElementById("filtre-temsilcilik").value;
-  const sehirFiltre = document.getElementById("filtre-sehir").value.trim().toLowerCase();
+  const tid   = document.getElementById("filtre-temsilcilik").value;
+  const sehirF = document.getElementById("filtre-sehir").value.trim().toLowerCase();
   const params = {};
   if (tarih) params.tarih = tarih;
-  if (tid) params.temsilcilik_id = tid;
+  if (tid)   params.temsilcilik_id = tid;
 
   const el = document.getElementById("galeri-icerik");
-  el.innerHTML = '<div class="yukleniyor"><div class="spinner"></div> Yükleniyor...</div>';
+  el.innerHTML = '<div class="yukleniyor-alani"><div class="dongu"></div> Yükleniyor...</div>';
 
   try {
     let gorseller = await API.gorseller(params);
-    // Şehir filtresi (client-side)
-    if (sehirFiltre) {
-      gorseller = gorseller.filter(g =>
-        (g.yukleyen.sehir || "").toLowerCase().includes(sehirFiltre)
-      );
-    }
+    if (sehirF) gorseller = gorseller.filter(g => (g.yukleyen.sehir || "").toLowerCase().includes(sehirF));
     gorsellerCache = gorseller;
+    if (!gorseller.length) { el.innerHTML = '<div class="bos-durum"><div class="bos-ikn">📭</div><p>Görsel bulunamadı</p></div>'; return; }
 
-    if (gorseller.length === 0) {
-      el.innerHTML = '<div class="bos-durum"><div class="ikn">📭</div><p>Görsel bulunamadı</p></div>';
-      return;
-    }
-
-    // Gün → Şehir → Temsilcilik
-    const gunGrup = {};
+    // Gün → Şehir → Başlık
+    const grup = {};
     gorseller.forEach(g => {
-      const gun = g.tarih;
+      const gun   = g.tarih;
       const sehir = g.yukleyen.sehir || "Şehir Belirtilmemiş";
-      const tAd = g.temsilcilik.ad;
-      if (!gunGrup[gun]) gunGrup[gun] = {};
-      if (!gunGrup[gun][sehir]) gunGrup[gun][sehir] = {};
-      if (!gunGrup[gun][sehir][tAd]) gunGrup[gun][sehir][tAd] = [];
-      gunGrup[gun][sehir][tAd].push(g);
+      const baslik = g.baslik || "Başlıksız";
+      if (!grup[gun]) grup[gun] = {};
+      if (!grup[gun][sehir]) grup[gun][sehir] = {};
+      if (!grup[gun][sehir][baslik]) grup[gun][sehir][baslik] = [];
+      grup[gun][sehir][baslik].push(g);
     });
 
-    const gunler = Object.keys(gunGrup).sort().reverse();
-    el.innerHTML = gunler.map(gun => {
-      const toplamGorsel = Object.values(gunGrup[gun])
-        .flatMap(s => Object.values(s)).flat().length;
+    el.innerHTML = Object.keys(grup).sort().reverse().map(gun => {
+      const toplamGorsel = Object.values(grup[gun]).flatMap(s => Object.values(s)).flat().length;
       return `
-        <div class="gun-blok">
-          <div class="gun-baslik">📅 ${gun} — ${toplamGorsel} görsel</div>
-          ${Object.entries(gunGrup[gun]).map(([sehir, temsilcilikler]) => `
-            <div class="sehir-blok">
-              <div class="sehir-baslik">📍 ${sehir}</div>
-              ${Object.entries(temsilcilikler).map(([tAd, grseller]) => `
-                <div class="temsilcilik-blok" style="margin-left:12px;margin-bottom:16px;">
-                  <div class="temsilcilik-baslik">🏢 ${tAd} <span class="rozet rozet-yesil">${grseller.length}</span></div>
-                  <div class="gorsel-grid">${grseller.map(g => gorselKartHtml(g)).join("")}</div>
+        <div class="tarih-blok">
+          <div class="tarih-baslik">
+            <div class="tarih-cizgi"></div>
+            <div class="tarih-etiket">📅 ${gun}</div>
+            <span class="tarih-adet">${toplamGorsel} görsel</span>
+            <div class="tarih-cizgi"></div>
+          </div>
+          ${Object.entries(grup[gun]).map(([sehir, basliklar]) => `
+            <div class="sehir-bolum">
+              <div class="sehir-etiketi">📍 ${sehir}</div>
+              ${Object.entries(basliklar).map(([baslik, grseller]) => `
+                <div class="baslik-bolum">
+                  <div class="baslik-etiketi">🏷️ ${baslik} <span class="rozet rozet-gri">${grseller.length}</span></div>
+                  <div class="gorsel-izgarasi">${grseller.map(g => gorselKartHtml(g)).join("")}</div>
                 </div>
               `).join("")}
             </div>
@@ -426,27 +447,26 @@ function filtreTemizle() {
 }
 
 function gorselKartHtml(g) {
-  const sehir = g.yukleyen.sehir ? `<span class="rozet rozet-mavi" style="font-size:.7rem;">${g.yukleyen.sehir}</span> ` : "";
   return `
-    <div class="gorsel-kart" onclick="lightboxAc(${g.id})">
-      <img src="/uploads/${g.dosya_yolu}" alt="${g.orijinal_ad}" loading="lazy">
-      <div class="gorsel-alt">${sehir}${g.orijinal_ad}</div>
-      ${g.baslik ? `<div class="gorsel-not">${g.baslik}</div>` : ""}
+    <div class="gorsel-karti" onclick="lightboxAc(${g.id})">
+      <img src="/uploads/${g.dosya_yolu}" alt="${g.baslik || g.orijinal_ad}" loading="lazy">
+      <div class="gorsel-bilgi">
+        <div class="gorsel-baslik">${g.baslik || g.orijinal_ad}</div>
+        <div class="gorsel-meta">${g.yukleyen.sehir || ""} ${g.yukleyen.sehir && g.temsilcilik ? "·" : ""} ${g.temsilcilik.ad}</div>
+      </div>
     </div>`;
 }
 
-// ─── LIGHTBOX ───
+// ── LİGHTBOX ──
 function lightboxAc(id) {
   const g = gorsellerCache.find(x => x.id === id);
   if (!g) return;
   acikGorsel = g;
   document.getElementById("lb-img").src = "/uploads/" + g.dosya_yolu;
-  document.getElementById("lb-baslik").textContent =
-    g.baslik || `${g.yukleyen.sehir ? g.yukleyen.sehir + " / " : ""}${g.temsilcilik.ad}`;
-  document.getElementById("lb-not").textContent = g.baslik ? `${g.yukleyen.sehir ? g.yukleyen.sehir + " / " : ""}${g.temsilcilik.ad}` : "";
+  document.getElementById("lb-baslik").textContent = g.baslik || g.orijinal_ad;
   const kb = g.boyut_bytes ? (g.boyut_bytes / 1024).toFixed(0) + " KB" : "";
   document.getElementById("lb-meta").textContent =
-    `${g.tarih} • ${g.yukleyen.ad_soyad}${kb ? " • " + kb : ""}`;
+    [g.tarih, g.yukleyen.sehir, g.temsilcilik.ad, g.yukleyen.ad_soyad, kb].filter(Boolean).join("  ·  ");
   document.getElementById("lb-indir").href = "/uploads/" + g.dosya_yolu;
   document.getElementById("lb-indir").download = g.orijinal_ad;
   document.getElementById("lightbox").classList.add("acik");
@@ -457,58 +477,60 @@ function lightboxKapat() {
   acikGorsel = null;
 }
 
-function notDuzenleAc() {
+document.getElementById("lightbox").addEventListener("click", e => {
+  if (e.target === document.getElementById("lightbox")) lightboxKapat();
+});
+
+function baslikDuzenleAc() {
   if (!acikGorsel) return;
-  document.getElementById("not-gorsel-id").value = acikGorsel.id;
-  document.getElementById("not-metin").value = acikGorsel.not_metni || "";
-  document.getElementById("lightbox").classList.remove("acik");
-  document.getElementById("not-modal").classList.add("acik");
+  document.getElementById("baslik-gorsel-id").value = acikGorsel.id;
+  document.getElementById("baslik-metin").value = acikGorsel.baslik || "";
+  lightboxKapat();
+  document.getElementById("baslik-modal").classList.add("acik");
 }
 
-async function notKaydet() {
-  const id = document.getElementById("not-gorsel-id").value;
-  const metin = document.getElementById("not-metin").value;
+async function baslikKaydet() {
+  const id    = document.getElementById("baslik-gorsel-id").value;
+  const metin = document.getElementById("baslik-metin").value.trim();
+  if (!metin) { toast("Başlık boş olamaz", "hata"); return; }
   try {
-    const guncellendi = await API.gorselBaslikGuncelle(id, metin);
-    const idx = gorsellerCache.findIndex(g => g.id == id);
-    if (idx !== -1) gorsellerCache[idx] = guncellendi;
+    const g = await API.gorselBaslikGuncelle(id, metin);
+    const idx = gorsellerCache.findIndex(x => x.id == id);
+    if (idx !== -1) gorsellerCache[idx] = g;
     toast("Başlık kaydedildi");
-    modalKapat("not-modal");
-    if (aktifSayfa === "galeri") galeriYukle();
-    else panoYukle();
+    modalKapat("baslik-modal");
+    if (aktifSayfa === "galeri") galeriYukle(); else panoYukle();
   } catch (e) { toast(e.message, "hata"); }
 }
 
 async function gorselSilOnay() {
-  if (!acikGorsel) return;
-  if (!confirm(`"${acikGorsel.orijinal_ad}" silinsin mi?`)) return;
+  if (!acikGorsel || !confirm(`"${acikGorsel.baslik || acikGorsel.orijinal_ad}" silinsin mi? Bu işlem geri alınamaz.`)) return;
   try {
     await API.gorselSil(acikGorsel.id);
     toast("Görsel silindi");
     lightboxKapat();
-    if (aktifSayfa === "galeri") galeriYukle();
-    else panoYukle();
+    if (aktifSayfa === "galeri") galeriYukle(); else panoYukle();
   } catch (e) { toast(e.message, "hata"); }
 }
 
-// ─── TEMSİLCİLİKLER ───
+// ── TEMSİLCİLİKLER ──
 async function temsilciliklerYukle() {
   const tbody = document.getElementById("temsilcilik-tablo");
-  tbody.innerHTML = '<tr><td colspan="5" class="yukleniyor"><div class="spinner"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="5"><div class="yukleniyor-alani"><div class="dongu"></div></div></td></tr>';
   try {
     const liste = await API.temsilcilikler();
     temsilciliklerCache = liste;
     tbody.innerHTML = liste.map(t => `
       <tr>
-        <td>${t.id}</td>
+        <td style="color:var(--metin-ucuncul);font-size:.8rem;">${t.id}</td>
         <td><strong>${t.ad}</strong></td>
-        <td>${t.aciklama || "–"}</td>
+        <td style="color:var(--metin-ikincil);">${t.aciklama || "—"}</td>
         <td><span class="rozet ${t.aktif ? "rozet-yesil" : "rozet-gri"}">${t.aktif ? "Aktif" : "Pasif"}</span></td>
         <td>
-          <button class="btn btn-gri" style="padding:5px 10px;font-size:.8rem;" onclick="temsilcilikDuzenle(${t.id})">✏️</button>
-          <button class="btn btn-kirmizi" style="padding:5px 10px;font-size:.8rem;margin-left:4px;" onclick="temsilcilikSilOnay(${t.id},'${t.ad}')">🗑️</button>
+          <button class="btn btn-ikincil btn-sm" onclick="temsilcilikDuzenle(${t.id})">Düzenle</button>
+          <button class="btn btn-tehlike btn-sm" style="margin-left:4px;" onclick="temsilcilikSilOnay(${t.id},'${t.ad}')">Sil</button>
         </td>
-      </tr>`).join("") || '<tr><td colspan="5" class="bos-durum">Henüz temsilcilik eklenmedi</td></tr>';
+      </tr>`).join("") || '<tr><td colspan="5"><div class="bos-durum"><p>Henüz temsilcilik eklenmedi</p></div></td></tr>';
   } catch (e) { toast(e.message, "hata"); }
 }
 
@@ -531,11 +553,8 @@ function temsilcilikDuzenle(id) {
 }
 
 async function temsilcilikKaydet() {
-  const id = document.getElementById("temsilcilik-id").value;
-  const veri = {
-    ad: document.getElementById("temsilcilik-ad").value.trim(),
-    aciklama: document.getElementById("temsilcilik-aciklama").value.trim() || null,
-  };
+  const id   = document.getElementById("temsilcilik-id").value;
+  const veri = { ad: document.getElementById("temsilcilik-ad").value.trim(), aciklama: document.getElementById("temsilcilik-aciklama").value.trim() || null };
   if (!veri.ad) { toast("Ad boş olamaz", "hata"); return; }
   try {
     id ? await API.temsilcilikGuncelle(id, veri) : await API.temsilcilikOlustur(veri);
@@ -547,51 +566,43 @@ async function temsilcilikKaydet() {
 
 async function temsilcilikSilOnay(id, ad) {
   if (!confirm(`"${ad}" silinsin mi?`)) return;
-  try {
-    await API.temsilcilikSil(id);
-    toast("Silindi");
-    temsilciliklerYukle();
-  } catch (e) { toast(e.message, "hata"); }
+  try { await API.temsilcilikSil(id); toast("Silindi"); temsilciliklerYukle(); }
+  catch (e) { toast(e.message, "hata"); }
 }
 
-// ─── KULLANICILAR ───
+// ── KULLANICILAR ──
 async function temsilciliklerIcinYukle() {
   const liste = await API.temsilcilikler().catch(() => []);
   temsilciliklerCache = liste;
   const sel = document.getElementById("kullanici-temsilcilik");
-  sel.innerHTML = '<option value="">Seçiniz...</option>' +
-    liste.map(t => `<option value="${t.id}">${t.ad}</option>`).join("");
+  sel.innerHTML = '<option value="">Seçiniz...</option>' + liste.map(t => `<option value="${t.id}">${t.ad}</option>`).join("");
 }
 
 async function kullanicilariYukle() {
   const tbody = document.getElementById("kullanici-tablo");
-  tbody.innerHTML = '<tr><td colspan="8" class="yukleniyor"><div class="spinner"></div></td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8"><div class="yukleniyor-alani"><div class="dongu"></div></div></td></tr>';
   try {
-    const liste = await API.kullanicilar();
-    kullanicilerCache = liste;
-    tbody.innerHTML = liste.map(k => `
+    kullanicilerCache = await API.kullanicilar();
+    tbody.innerHTML = kullanicilerCache.map(k => `
       <tr>
-        <td>${k.id}</td>
+        <td style="color:var(--metin-ucuncul);font-size:.8rem;">${k.id}</td>
         <td><strong>${k.ad_soyad}</strong></td>
-        <td>${k.kullanici_adi}</td>
-        <td>${k.sehir ? `<span class="rozet rozet-mavi">${k.sehir}</span>` : "–"}</td>
-        <td><span class="rozet ${k.rol === "admin" ? "rozet-turuncu" : "rozet-mavi"}">${k.rol}</span></td>
-        <td>${k.temsilcilik ? k.temsilcilik.ad : "–"}</td>
+        <td style="color:var(--metin-ikincil);font-size:.84rem;">${k.kullanici_adi}</td>
+        <td>${k.sehir ? `<span class="rozet rozet-mavi">${k.sehir}</span>` : "—"}</td>
+        <td><span class="rozet ${k.rol === "admin" ? "rozet-sari" : "rozet-gri"}">${k.rol === "admin" ? "Yönetici" : "Temsilci"}</span></td>
+        <td style="color:var(--metin-ikincil);">${k.temsilcilik ? k.temsilcilik.ad : "—"}</td>
         <td><span class="rozet ${k.aktif ? "rozet-yesil" : "rozet-gri"}">${k.aktif ? "Aktif" : "Pasif"}</span></td>
         <td>
-          <button class="btn btn-gri" style="padding:5px 10px;font-size:.8rem;" onclick="kullaniciDuzenle(${k.id})">✏️</button>
-          ${k.rol !== "admin" ? `<button class="btn btn-kirmizi" style="padding:5px 10px;font-size:.8rem;margin-left:4px;" onclick="kullaniciSilOnay(${k.id},'${k.ad_soyad}')">🗑️</button>` : ""}
+          <button class="btn btn-ikincil btn-sm" onclick="kullaniciDuzenle(${k.id})">Düzenle</button>
+          ${k.rol !== "admin" ? `<button class="btn btn-tehlike btn-sm" style="margin-left:4px;" onclick="kullaniciSilOnay(${k.id},'${k.ad_soyad}')">Sil</button>` : ""}
         </td>
-      </tr>`).join("") || '<tr><td colspan="8">Henüz kullanıcı yok</td></tr>';
+      </tr>`).join("") || '<tr><td colspan="8"><div class="bos-durum"><p>Henüz kullanıcı yok</p></div></td></tr>';
   } catch (e) { toast(e.message, "hata"); }
 }
 
 function kullaniciModalAc() {
   document.getElementById("kullanici-id").value = "";
-  document.getElementById("kullanici-ad-soyad").value = "";
-  document.getElementById("kullanici-adi").value = "";
-  document.getElementById("kullanici-sifre").value = "";
-  document.getElementById("kullanici-sehir").value = "";
+  ["kullanici-ad-soyad","kullanici-adi","kullanici-sifre","kullanici-sehir"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("kullanici-rol").value = "temsilci";
   document.getElementById("kullanici-temsilcilik").value = "";
   document.getElementById("sifre-aciklama").textContent = "";
@@ -610,19 +621,19 @@ function kullaniciDuzenle(id) {
   document.getElementById("kullanici-sehir").value = k.sehir || "";
   document.getElementById("kullanici-rol").value = k.rol;
   document.getElementById("kullanici-temsilcilik").value = k.temsilcilik_id || "";
-  document.getElementById("sifre-aciklama").textContent = "(boş = değişmez)";
+  document.getElementById("sifre-aciklama").textContent = "boş = değişmez";
   document.getElementById("temsilci-alanlari").style.display = k.rol === "temsilci" ? "block" : "none";
   document.getElementById("kullanici-modal-baslik").textContent = "Kullanıcı Düzenle";
   document.getElementById("kullanici-modal").classList.add("acik");
 }
 
 function rolDegisti() {
-  const rol = document.getElementById("kullanici-rol").value;
-  document.getElementById("temsilci-alanlari").style.display = rol === "temsilci" ? "block" : "none";
+  document.getElementById("temsilci-alanlari").style.display =
+    document.getElementById("kullanici-rol").value === "temsilci" ? "block" : "none";
 }
 
 async function kullaniciKaydet() {
-  const id = document.getElementById("kullanici-id").value;
+  const id  = document.getElementById("kullanici-id").value;
   const rol = document.getElementById("kullanici-rol").value;
   const tid = document.getElementById("kullanici-temsilcilik").value;
   const sifre = document.getElementById("kullanici-sifre").value;
@@ -632,52 +643,48 @@ async function kullaniciKaydet() {
     const veri = {
       ad_soyad: document.getElementById("kullanici-ad-soyad").value.trim(),
       kullanici_adi: document.getElementById("kullanici-adi").value.trim(),
-      sifre,
-      rol,
+      sifre, rol,
       sehir: sehir || null,
       temsilcilik_id: tid ? parseInt(tid) : null,
     };
     if (!veri.ad_soyad || !veri.kullanici_adi || !veri.sifre) { toast("Zorunlu alanları doldurun", "hata"); return; }
     if (rol === "temsilci" && !veri.temsilcilik_id) { toast("Temsilcilik seçilmeli", "hata"); return; }
-    try {
-      await API.kullaniciOlustur(veri);
-      toast("Kullanıcı oluşturuldu");
-      modalKapat("kullanici-modal");
-      kullanicilerCache = [];
-      kullanicilariYukle();
-    } catch (e) { toast(e.message, "hata"); }
+    try { await API.kullaniciOlustur(veri); toast("Kullanıcı oluşturuldu"); modalKapat("kullanici-modal"); kullanicilerCache = []; kullanicilariYukle(); }
+    catch (e) { toast(e.message, "hata"); }
   } else {
     const veri = { ad_soyad: document.getElementById("kullanici-ad-soyad").value.trim(), sehir: sehir || null, temsilcilik_id: tid ? parseInt(tid) : null };
     if (sifre) veri.sifre = sifre;
-    try {
-      await API.kullaniciGuncelle(id, veri);
-      toast("Kullanıcı güncellendi");
-      modalKapat("kullanici-modal");
-      kullanicilerCache = [];
-      kullanicilariYukle();
-    } catch (e) { toast(e.message, "hata"); }
+    try { await API.kullaniciGuncelle(id, veri); toast("Güncellendi"); modalKapat("kullanici-modal"); kullanicilerCache = []; kullanicilariYukle(); }
+    catch (e) { toast(e.message, "hata"); }
   }
 }
 
 async function kullaniciSilOnay(id, ad) {
   if (!confirm(`"${ad}" silinsin mi?`)) return;
-  try {
-    await API.kullaniciSil(id);
-    toast("Kullanıcı silindi");
-    kullanicilerCache = [];
-    kullanicilariYukle();
-  } catch (e) { toast(e.message, "hata"); }
+  try { await API.kullaniciSil(id); toast("Silindi"); kullanicilerCache = []; kullanicilariYukle(); }
+  catch (e) { toast(e.message, "hata"); }
 }
 
-// ─── Yardımcı ───
+// ── Yardımcı ──
 function modalKapat(id) { document.getElementById(id).classList.remove("acik"); }
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     document.querySelectorAll(".modal-arka.acik").forEach(m => m.classList.remove("acik"));
-    document.getElementById("lightbox").classList.remove("acik");
+    lightboxKapat();
   }
 });
+
+// ── Toast ──
+function toast(mesaj, tip = "basari") {
+  const ikonlar = { basari: "✓", hata: "✕", bilgi: "ℹ" };
+  const konteyner = document.getElementById("toast-konteyner");
+  const el = document.createElement("div");
+  el.className = `toast-karti ${tip}`;
+  el.innerHTML = `<span class="t-ikn">${ikonlar[tip] || "ℹ"}</span><span class="t-metin">${mesaj}</span>`;
+  konteyner.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
 </script>
 </body>
 </html>

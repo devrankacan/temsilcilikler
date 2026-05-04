@@ -232,7 +232,7 @@ def kullanici_sil(
 @app.post("/api/gorseller", response_model=schemas.GorselYanit, status_code=201)
 async def gorsel_yukle(
     dosya: UploadFile = File(...),
-    baslik: Optional[str] = Form(None),
+    baslik: str = Form(...),
     db: Session = Depends(get_db),
     kullanici: models.Kullanici = Depends(mevcut_kullanici),
 ):
@@ -256,7 +256,10 @@ async def gorsel_yukle(
 
     bugun = datetime.now().strftime("%Y-%m-%d")
     sehir_adi = guvenli_klasor_adi(kullanici.sehir or "genel")
-    baslik_adi = guvenli_klasor_adi(baslik or "genel")
+    if not baslik or not baslik.strip():
+        raise HTTPException(status_code=400, detail="Başlık zorunludur")
+    baslik = baslik.strip()
+    baslik_adi = guvenli_klasor_adi(baslik)
     klasor = UPLOAD_DIR / bugun / sehir_adi / baslik_adi
     klasor.mkdir(parents=True, exist_ok=True)
 

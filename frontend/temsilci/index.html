@@ -6,174 +6,275 @@
 <title>Temsilci Paneli – İyilik Derneği</title>
 <link rel="stylesheet" href="/static/css/main.css">
 <style>
-  .yukle-wrap {
-    max-width: 680px;
+  .yukle-sayfa {
+    max-width: 700px;
     margin: 0 auto;
   }
-  .hosgeldin {
-    background: linear-gradient(135deg, var(--yesil-koyu), var(--yesil-acik));
+  .karsilama-karti {
+    background: linear-gradient(135deg, var(--birincil-koyu) 0%, var(--birincil-acik) 100%);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+    margin-bottom: 18px;
     color: var(--beyaz);
-    border-radius: var(--radius);
-    padding: 20px 24px;
-    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
+    border: none;
+    box-shadow: var(--golge-md);
   }
-  .hosgeldin .ikn { font-size: 2rem; }
-  .hosgeldin h2 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
-  .hosgeldin p { font-size: .85rem; opacity: .85; }
-  .dosya-listesi { list-style:none; margin-top:8px; }
-  .dosya-listesi li {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:8px 12px;
-    background:var(--gri-acik);
-    border-radius:var(--radius-kucuk);
-    margin-bottom:5px;
-    font-size:.85rem;
+  .karsilama-amblemi {
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,.15);
+    border-radius: var(--r-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,.2);
   }
-  .dosya-listesi li .kaldir-btn { background:none; border:none; cursor:pointer; color:var(--kirmizi); font-size:.9rem; padding:2px 6px; }
-  .tamamlandi-banner {
-    background: #e8f5e9;
-    border: 1.5px solid var(--yesil-acik);
-    border-radius: var(--radius);
-    padding: 18px 24px;
+  .karsilama-metin h2 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .karsilama-metin p  { font-size: .84rem; opacity: .75; line-height: 1.5; }
+
+  .adim-numarasi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    background: var(--birincil);
+    color: var(--beyaz);
+    border-radius: 50%;
+    font-size: .72rem;
+    font-weight: 700;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .zorunlu-isareti {
+    color: var(--hata);
+    margin-left: 2px;
+  }
+
+  .baslik-ipucu {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .ipucu-etiketi {
+    padding: 3px 10px;
+    background: var(--vurgu-soluk);
+    border: 1px solid #a7f3d0;
+    border-radius: 20px;
+    font-size: .75rem;
+    color: var(--birincil);
+    cursor: pointer;
+    transition: all .15s;
+    font-weight: 500;
+  }
+  .ipucu-etiketi:hover { background: #d1fae5; }
+
+  .yukle-buton-alani {
+    margin-top: 6px;
+  }
+
+  .tamamlandi-kutu {
+    background: var(--beyaz);
+    border: 1px solid #bbf7d0;
+    border-left: 4px solid var(--vurgu);
+    border-radius: var(--r-lg);
+    padding: 28px 24px;
     text-align: center;
-    margin-top: 16px;
+    box-shadow: var(--golge-sm);
   }
-  .tamamlandi-banner .ikn { font-size: 2.5rem; margin-bottom: 8px; }
-  .tamamlandi-banner h3 { color: var(--yesil-koyu); margin-bottom: 4px; }
-  .tamamlandi-banner p { font-size:.85rem; color:var(--gri-koyu); }
+  .tamamlandi-kutu .onay-ikn { font-size: 2.5rem; margin-bottom: 10px; }
+  .tamamlandi-kutu h3 { font-size: 1.05rem; font-weight: 700; color: var(--basari); margin-bottom: 6px; }
+  .tamamlandi-kutu p  { font-size: .86rem; color: var(--metin-ikincil); line-height: 1.5; }
+
+  .gorsel-sayac-satiri {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: .82rem;
+    color: var(--metin-ikincil);
+  }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="giris-ekrani" class="login-wrap">
-  <div class="login-kart">
-    <div class="logo"><div style="font-size:3rem;">🌿</div></div>
-    <h1>İyilik Derneği</h1>
-    <p class="alt">Temsilci Paneli</p>
-    <form id="giris-form">
-      <div class="form-grup">
-        <label>Kullanıcı Adı</label>
-        <input type="text" id="giris-adi" placeholder="kullanici_adi" required autocomplete="username">
-      </div>
-      <div class="form-grup">
-        <label>Şifre</label>
-        <input type="password" id="giris-sifre" placeholder="••••••••" required autocomplete="current-password">
-      </div>
-      <p id="giris-hata" style="color:var(--kirmizi);font-size:.85rem;margin-bottom:12px;display:none;"></p>
-      <button type="submit" class="btn btn-yesil btn-tam">Giriş Yap</button>
-    </form>
-  </div>
-</div>
-
-<!-- PANEL -->
-<div id="panel-ekrani" class="ana-layout" style="display:none;">
-
-  <!-- Kenar Çubuk -->
-  <nav class="kenar-cubuk">
-    <div class="kenar-logo">
-      <div style="font-size:1.8rem;margin-bottom:6px;">🌿</div>
-      <h2>İyilik Derneği</h2>
-      <p>Temsilci Paneli</p>
-    </div>
-    <div class="kenar-nav">
-      <a href="#" class="aktif"><span class="ikn">📤</span> Görsel Yükle</a>
-    </div>
-    <div class="kenar-alt">
-      <div id="kenar-ad">–</div>
-      <div id="kenar-sehir" style="font-size:.75rem;opacity:.6;margin-top:2px;"></div>
-      <div id="kenar-temsilcilik" style="font-size:.75rem;opacity:.6;margin-top:1px;"></div>
-      <a href="#" onclick="cikisYap()" style="color:rgba(255,255,255,.7);font-size:.82rem;text-decoration:none;margin-top:10px;display:block;">🚪 Çıkış Yap</a>
-    </div>
-  </nav>
-
-  <!-- İçerik -->
-  <div class="icerik-alani">
-    <div class="ust-bar">
-      <h1>Faaliyet Görseli Yükle</h1>
-      <div class="kullanici-bilgi">
-        <div class="avatar" id="kullanici-avatar">T</div>
+<!-- ══════════════════ GİRİŞ ══════════════════ -->
+<div id="giris-ekrani" class="giris-sayfa">
+  <div class="giris-sol">
+    <div class="giris-sol-icerik">
+      <div class="giris-logo">
+        <div class="amblemi">🌿</div>
         <div>
-          <div id="kullanici-adi-goster" style="font-weight:600;font-size:.88rem;">–</div>
-          <div id="alt-bilgi-goster" style="font-size:.75rem;color:var(--gri-koyu);">–</div>
+          <h1>İyilik Derneği</h1>
+          <p>Temsilcilik Yönetim Sistemi</p>
         </div>
       </div>
+      <p class="giris-manset">Faaliyet görsellerinizi<br><span>güvenle yükleyin.</span></p>
+      <p class="giris-alt-metin">Görseller orijinal çözünürlüğüyle saklanır ve anında yöneticilerinize iletilir.</p>
     </div>
-
-    <div class="sayfa-icerik">
-      <div class="yukle-wrap">
-
-        <!-- Hoşgeldin -->
-        <div class="hosgeldin">
-          <div class="ikn">👋</div>
-          <div>
-            <h2 id="hosgeldin-ad">Merhaba!</h2>
-            <p id="hosgeldin-detay">Bugünkü faaliyet görsellerinizi yükleyebilirsiniz.</p>
-          </div>
+  </div>
+  <div class="giris-sag">
+    <div class="giris-kutu">
+      <h2>Temsilci Girişi</h2>
+      <p class="alt-baslik">Hesabınıza giriş yapın</p>
+      <form id="giris-form">
+        <div class="form-alan">
+          <label>Kullanıcı Adı</label>
+          <input type="text" id="giris-adi" placeholder="kullanici_adi" required autocomplete="username">
         </div>
-
-        <!-- Yükleme Kartı -->
-        <div class="kart">
-          <div class="kart-baslik">📷 Görsel Seç</div>
-
-          <!-- Sürükle-bırak alanı -->
-          <div class="yukle-alan" id="yukle-alan" onclick="document.getElementById('dosya-girdi').click()">
-            <div class="ikn">📁</div>
-            <p style="font-weight:600;margin-bottom:4px;">Tıkla veya sürükle-bırak</p>
-            <p style="font-size:.8rem;color:#aaa;">JPG · PNG · WEBP · HEIC — Orijinal çözünürlük korunur</p>
-          </div>
-          <input type="file" id="dosya-girdi" accept="image/*" multiple style="display:none">
-
-          <p id="gorsel-sayaci" style="font-size:.85rem;color:var(--gri-koyu);margin-top:6px;"></p>
-          <ul class="dosya-listesi" id="dosya-listesi"></ul>
-
-          <!-- Önizleme -->
-          <div id="onizleme-grid" class="onizleme-grid"></div>
+        <div class="form-alan">
+          <label>Şifre</label>
+          <input type="password" id="giris-sifre" placeholder="••••••••" required autocomplete="current-password">
         </div>
-
-        <!-- Başlık -->
-        <div class="kart" id="not-kart" style="display:none;">
-          <div class="kart-baslik">🏷️ Başlık <span style="font-weight:400;font-size:.82rem;color:var(--gri-koyu);">(isteğe bağlı — klasöre de yansır)</span></div>
-          <div class="form-grup" style="margin-bottom:0;">
-            <input type="text" id="yukle-not" placeholder="Örn: Yemek Dağıtımı, Giysi Yardımı, İftarlık...">
-          </div>
-        </div>
-
-        <!-- Yükle Butonu -->
-        <div id="yukle-buton-alani" style="display:none;">
-          <button class="btn btn-acik btn-tam" id="yukle-btn" onclick="gorselleriYukle()">
-            📤 Yükle
-          </button>
-          <div id="progress-alani" style="display:none;margin-top:12px;">
-            <div style="font-size:.82rem;color:var(--gri-koyu);margin-bottom:5px;" id="progress-metin"></div>
-            <div class="progress-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
-          </div>
-        </div>
-
-        <!-- Tamamlandı Banner -->
-        <div id="tamamlandi-banner" class="tamamlandi-banner" style="display:none;">
-          <div class="ikn">✅</div>
-          <h3 id="tamamlandi-mesaj">Görsel(ler) başarıyla yüklendi!</h3>
-          <p>Görseller admin panelinize ulaştı.</p>
-          <button class="btn btn-yesil" style="margin-top:12px;" onclick="yeniYuklemeBaslat()">+ Yeni Yükleme</button>
-        </div>
-
-      </div>
+        <div id="giris-hata" style="display:none;padding:10px 13px;background:var(--hata-soluk);border:1px solid #fecaca;border-radius:var(--r-sm);font-size:.84rem;color:var(--hata);margin-bottom:14px;"></div>
+        <button type="submit" class="btn btn-birincil btn-tam btn-lg">Giriş Yap</button>
+      </form>
     </div>
   </div>
 </div>
 
-<div id="toast-wrap" class="toast-wrap"></div>
+<!-- ══════════════════ PANEL ══════════════════ -->
+<div id="panel-ekrani" class="panel-layout" style="display:none;">
+
+  <aside class="kenar-cubuk">
+    <div class="kenar-ust">
+      <div class="kenar-logo-satir">
+        <div class="kenar-amblemi">🌿</div>
+        <div class="kenar-kurum">
+          <h2>İyilik Derneği</h2>
+          <p>Temsilci Paneli</p>
+        </div>
+      </div>
+    </div>
+    <nav class="kenar-nav">
+      <div class="kenar-nav-baslik">İşlemler</div>
+      <a href="#" class="aktif"><span class="nav-ikn">📤</span> Görsel Yükle</a>
+    </nav>
+    <div class="kenar-alt">
+      <div class="kenar-kullanici">
+        <div class="kenar-avatar" id="kenar-avatar">T</div>
+        <div class="kenar-kullanici-bilgi">
+          <div class="isim" id="kenar-isim">–</div>
+          <div class="rol" id="kenar-sehir-temsilcilik">–</div>
+        </div>
+      </div>
+      <button class="cikis-btn" onclick="cikisYap()">🚪 Çıkış Yap</button>
+    </div>
+  </aside>
+
+  <div class="icerik-alani">
+    <header class="ust-cubuk">
+      <div class="ust-cubuk-sol">
+        <div class="breadcrumb">
+          <span>İyilik Derneği</span>
+          <span class="ayirac">›</span>
+          <span class="mevcut">Görsel Yükle</span>
+        </div>
+      </div>
+      <div class="ust-cubuk-sag">
+        <div class="ust-kullanici">
+          <div class="ust-avatar" id="ust-avatar">T</div>
+          <div class="ust-kullanici-metin">
+            <div class="isim" id="ust-isim">–</div>
+            <div class="detay" id="ust-detay">–</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="sayfa-icerik">
+      <div class="yukle-sayfa">
+
+        <!-- Karşılama -->
+        <div class="karsilama-karti">
+          <div class="karsilama-amblemi">👋</div>
+          <div class="karsilama-metin">
+            <h2 id="karsilama-baslik">Merhaba!</h2>
+            <p id="karsilama-alt">Bugünkü faaliyet görsellerinizi aşağıdan yükleyebilirsiniz.</p>
+          </div>
+        </div>
+
+        <!-- Adım 1: Görsel Seç -->
+        <div class="kart" style="margin-bottom:14px;">
+          <div class="kart-baslik">
+            <h3><span class="adim-numarasi">1</span> Görsel Seçin</h3>
+          </div>
+          <div class="kart-icerik">
+            <div class="yukle-alani" id="yukle-alani" onclick="document.getElementById('dosya-girdi').click()">
+              <div class="yukle-ikn">📁</div>
+              <div class="yukle-baslik">Tıklayın veya sürükleyip bırakın</div>
+              <div class="yukle-alt">JPG · PNG · WEBP · HEIC &nbsp;·&nbsp; Orijinal çözünürlük korunur</div>
+            </div>
+            <input type="file" id="dosya-girdi" accept="image/*" multiple style="display:none">
+            <div class="gorsel-sayac-satiri">
+              <span id="gorsel-sayaci"></span>
+              <button class="btn btn-ikincil btn-sm" id="tumunu-kaldir-btn" onclick="tumunuKaldir()" style="display:none;">Tümünü Kaldır</button>
+            </div>
+            <ul class="dosya-listesi" id="dosya-listesi"></ul>
+            <div class="onizleme-izgarasi" id="onizleme-izgarasi"></div>
+          </div>
+        </div>
+
+        <!-- Adım 2: Başlık -->
+        <div class="kart" id="baslik-kart" style="display:none;margin-bottom:14px;">
+          <div class="kart-baslik">
+            <h3><span class="adim-numarasi">2</span> Faaliyet Başlığı<span class="zorunlu-isareti">*</span></h3>
+          </div>
+          <div class="kart-icerik">
+            <div class="form-alan" style="margin-bottom:10px;">
+              <input type="text" id="yukle-baslik" placeholder="Örn: Yemek Dağıtımı, Giysi Yardımı, İftarlık Paketi..." maxlength="80">
+              <div class="form-hata-metin" id="baslik-hata">Başlık alanı zorunludur.</div>
+            </div>
+            <div class="baslik-ipucu">
+              <span style="font-size:.75rem;color:var(--metin-ucuncul);align-self:center;">Hızlı seçim:</span>
+              <span class="ipucu-etiketi" onclick="baslikSec('Yemek Dağıtımı')">Yemek Dağıtımı</span>
+              <span class="ipucu-etiketi" onclick="baslikSec('Giysi Yardımı')">Giysi Yardımı</span>
+              <span class="ipucu-etiketi" onclick="baslikSec('İftarlık Paketi')">İftarlık Paketi</span>
+              <span class="ipucu-etiketi" onclick="baslikSec('Kumanya Dağıtımı')">Kumanya Dağıtımı</span>
+              <span class="ipucu-etiketi" onclick="baslikSec('Ziyaret')">Ziyaret</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Adım 3: Yükle -->
+        <div class="yukle-buton-alani" id="yukle-buton-alani" style="display:none;">
+          <button class="btn btn-birincil btn-tam btn-lg" id="yukle-btn" onclick="gorselleriYukle()">
+            📤 &nbsp; Yükle
+          </button>
+          <div id="ilerleme-alani" style="display:none;margin-top:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+              <span style="font-size:.82rem;color:var(--metin-ikincil);" id="ilerleme-metin">Hazırlanıyor...</span>
+              <span style="font-size:.82rem;font-weight:600;color:var(--birincil);" id="ilerleme-yuzde">0%</span>
+            </div>
+            <div class="ilerleme-sarici"><div class="ilerleme-cubugu" id="ilerleme-cubugu" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <!-- Tamamlandı -->
+        <div class="tamamlandi-kutu" id="tamamlandi-kutu" style="display:none;">
+          <div class="onay-ikn">✅</div>
+          <h3 id="tamamlandi-baslik">Görseller Başarıyla Yüklendi</h3>
+          <p id="tamamlandi-alt">Görseller yöneticilerinize iletildi.</p>
+          <button class="btn btn-birincil" style="margin-top:16px;" onclick="yeniYuklemeBaslat()">+ Yeni Yükleme Yap</button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-konteyner" class="toast-konteyner"></div>
 
 <script src="/static/js/api.js"></script>
 <script>
 let seciliDosyalar = [];
 
-// ─── Init ───
-(function init() {
+// ── Init ──
+(function() {
   const k = mevcutKullanici();
   if (k && localStorage.getItem("token")) panelAc(k);
 })();
@@ -183,13 +284,13 @@ document.getElementById("giris-form").addEventListener("submit", async (e) => {
   const hataEl = document.getElementById("giris-hata");
   hataEl.style.display = "none";
   try {
-    const sonuc = await API.girisYap(
+    const r = await API.girisYap(
       document.getElementById("giris-adi").value,
       document.getElementById("giris-sifre").value
     );
-    localStorage.setItem("token", sonuc.access_token);
-    localStorage.setItem("kullanici", JSON.stringify(sonuc.kullanici));
-    panelAc(sonuc.kullanici);
+    localStorage.setItem("token", r.access_token);
+    localStorage.setItem("kullanici", JSON.stringify(r.kullanici));
+    panelAc(r.kullanici);
   } catch (err) {
     hataEl.textContent = err.message;
     hataEl.style.display = "block";
@@ -200,31 +301,31 @@ function panelAc(k) {
   document.getElementById("giris-ekrani").style.display = "none";
   document.getElementById("panel-ekrani").style.display = "flex";
 
+  const ilk  = k.ad_soyad[0].toUpperCase();
   const sehir = k.sehir || "";
-  const tAdi = k.temsilcilik ? k.temsilcilik.ad : "";
-  const altBilgi = [sehir, tAdi].filter(Boolean).join(" — ");
+  const tAdi  = k.temsilcilik ? k.temsilcilik.ad : "";
+  const detay = [sehir, tAdi].filter(Boolean).join(" · ");
 
-  document.getElementById("kullanici-adi-goster").textContent = k.ad_soyad;
-  document.getElementById("alt-bilgi-goster").textContent = altBilgi || "Temsilci";
-  document.getElementById("kullanici-avatar").textContent = k.ad_soyad[0].toUpperCase();
-  document.getElementById("kenar-ad").textContent = k.ad_soyad;
-  document.getElementById("kenar-sehir").textContent = sehir ? "📍 " + sehir : "";
-  document.getElementById("kenar-temsilcilik").textContent = tAdi ? "🏢 " + tAdi : "";
-  document.getElementById("hosgeldin-ad").textContent = "Merhaba, " + k.ad_soyad.split(" ")[0] + "!";
-  document.getElementById("hosgeldin-detay").textContent =
-    (sehir ? sehir + " — " : "") + (tAdi || "") + " bugünkü faaliyet görsellerinizi yükleyin.";
+  document.getElementById("kenar-avatar").textContent = ilk;
+  document.getElementById("kenar-isim").textContent = k.ad_soyad;
+  document.getElementById("kenar-sehir-temsilcilik").textContent = detay || "Temsilci";
+  document.getElementById("ust-avatar").textContent = ilk;
+  document.getElementById("ust-isim").textContent = k.ad_soyad;
+  document.getElementById("ust-detay").textContent = detay || "Temsilci";
+  document.getElementById("karsilama-baslik").textContent = "Merhaba, " + k.ad_soyad.split(" ")[0] + "!";
+  document.getElementById("karsilama-alt").textContent =
+    (detay ? detay + " — " : "") + "bugünkü faaliyet görsellerinizi yükleyebilirsiniz.";
 }
 
-// ─── Dosya Seçimi ───
-const yukleAlan = document.getElementById("yukle-alan");
+// ── Dosya Seçimi ──
+const yukleAlani = document.getElementById("yukle-alani");
 const dosyaGirdi = document.getElementById("dosya-girdi");
 
 dosyaGirdi.addEventListener("change", () => dosyaEkle(Array.from(dosyaGirdi.files)));
-yukleAlan.addEventListener("dragover", (e) => { e.preventDefault(); yukleAlan.classList.add("surukle"); });
-yukleAlan.addEventListener("dragleave", () => yukleAlan.classList.remove("surukle"));
-yukleAlan.addEventListener("drop", (e) => {
-  e.preventDefault();
-  yukleAlan.classList.remove("surukle");
+yukleAlani.addEventListener("dragover", e => { e.preventDefault(); yukleAlani.classList.add("surukle"); });
+yukleAlani.addEventListener("dragleave", () => yukleAlani.classList.remove("surukle"));
+yukleAlani.addEventListener("drop", e => {
+  e.preventDefault(); yukleAlani.classList.remove("surukle");
   dosyaEkle(Array.from(e.dataTransfer.files));
 });
 
@@ -232,121 +333,141 @@ function dosyaEkle(yeniDosyalar) {
   const izinli = ["image/jpeg","image/jpg","image/png","image/gif","image/webp","image/heic","image/heif"];
   yeniDosyalar.forEach(d => {
     if (!izinli.includes(d.type) && !d.name.toLowerCase().match(/\.(heic|heif)$/)) {
-      toast(`${d.name} desteklenmiyor`, "hata");
-      return;
+      toast(`${d.name} desteklenmiyor`, "hata"); return;
     }
-    if (!seciliDosyalar.find(x => x.name === d.name && x.size === d.size)) {
+    if (!seciliDosyalar.find(x => x.name === d.name && x.size === d.size))
       seciliDosyalar.push(d);
-    }
   });
   arabirimGuncelle();
 }
 
-function dosyaKaldir(idx) {
-  seciliDosyalar.splice(idx, 1);
-  arabirimGuncelle();
-}
+function dosyaKaldir(idx) { seciliDosyalar.splice(idx, 1); arabirimGuncelle(); }
+
+function tumunuKaldir() { seciliDosyalar = []; dosyaGirdi.value = ""; arabirimGuncelle(); }
 
 function arabirimGuncelle() {
-  const sayac = document.getElementById("gorsel-sayaci");
-  const liste = document.getElementById("dosya-listesi");
-  const notKart = document.getElementById("not-kart");
-  const butonAlani = document.getElementById("yukle-buton-alani");
-
   const var_ = seciliDosyalar.length > 0;
-  notKart.style.display = var_ ? "block" : "none";
-  butonAlani.style.display = var_ ? "block" : "none";
+  document.getElementById("baslik-kart").style.display = var_ ? "block" : "none";
+  document.getElementById("yukle-buton-alani").style.display = var_ ? "block" : "none";
+  document.getElementById("tumunu-kaldir-btn").style.display = var_ ? "inline-flex" : "none";
 
-  if (!var_) {
-    sayac.textContent = "";
-    liste.innerHTML = "";
-    document.getElementById("onizleme-grid").innerHTML = "";
-    return;
-  }
+  const sayac = document.getElementById("gorsel-sayaci");
+  const liste  = document.getElementById("dosya-listesi");
+  const izg    = document.getElementById("onizleme-izgarasi");
+
+  if (!var_) { sayac.textContent = ""; liste.innerHTML = ""; izg.innerHTML = ""; return; }
 
   sayac.textContent = `${seciliDosyalar.length} dosya seçildi`;
-  liste.innerHTML = seciliDosyalar.map((d, i) => `
-    <li>
-      <span>📄 ${d.name} <small style="color:var(--gri-koyu);">${(d.size/1024).toFixed(0)} KB</small></span>
-      <button class="kaldir-btn" onclick="dosyaKaldir(${i})" title="Kaldır">✕</button>
-    </li>
-  `).join("");
 
-  const grid = document.getElementById("onizleme-grid");
-  grid.innerHTML = "";
+  liste.innerHTML = seciliDosyalar.map((d, i) => `
+    <li class="dosya-satir">
+      <span class="dosya-ikn">🖼️</span>
+      <span class="dosya-adi">${d.name}</span>
+      <span class="dosya-boyut">${(d.size / 1024).toFixed(0)} KB</span>
+      <button class="kaldir-btn" onclick="dosyaKaldir(${i})" title="Kaldır">✕</button>
+    </li>`).join("");
+
+  izg.innerHTML = "";
   seciliDosyalar.slice(0, 6).forEach(d => {
     const div = document.createElement("div");
-    div.className = "onizleme-kart";
+    div.className = "onizleme-karti";
     const img = document.createElement("img");
     const reader = new FileReader();
-    reader.onload = (e) => { img.src = e.target.result; };
+    reader.onload = e => { img.src = e.target.result; };
     reader.readAsDataURL(d);
     div.appendChild(img);
-    grid.appendChild(div);
+    izg.appendChild(div);
   });
   if (seciliDosyalar.length > 6) {
-    const more = document.createElement("div");
-    more.style.cssText = "display:flex;align-items:center;justify-content:center;background:var(--gri);border-radius:6px;font-size:.85rem;color:var(--gri-koyu);aspect-ratio:1;font-weight:600;";
-    more.textContent = `+${seciliDosyalar.length - 6}`;
-    grid.appendChild(more);
+    const daha = document.createElement("div");
+    daha.className = "onizleme-daha";
+    daha.textContent = `+${seciliDosyalar.length - 6}`;
+    izg.appendChild(daha);
   }
 }
 
-// ─── YÜKLEME ───
+function baslikSec(metin) {
+  document.getElementById("yukle-baslik").value = metin;
+  document.getElementById("yukle-baslik").classList.remove("hata");
+  document.getElementById("baslik-hata").style.display = "none";
+}
+
+// ── Yükleme ──
 async function gorselleriYukle() {
-  if (seciliDosyalar.length === 0) return;
-  const btn = document.getElementById("yukle-btn");
-  const progressAlani = document.getElementById("progress-alani");
-  const progressBar = document.getElementById("progress-bar");
-  const progressMetin = document.getElementById("progress-metin");
-  const not = document.getElementById("yukle-not").value.trim();
+  const baslik = document.getElementById("yukle-baslik").value.trim();
+  if (!baslik) {
+    document.getElementById("yukle-baslik").classList.add("hata");
+    document.getElementById("baslik-hata").style.display = "block";
+    document.getElementById("yukle-baslik").focus();
+    return;
+  }
+  document.getElementById("yukle-baslik").classList.remove("hata");
+  document.getElementById("baslik-hata").style.display = "none";
+
+  if (!seciliDosyalar.length) return;
+
+  const btn          = document.getElementById("yukle-btn");
+  const ilerleAlani  = document.getElementById("ilerleme-alani");
+  const ilerleCubuk  = document.getElementById("ilerleme-cubugu");
+  const ilerleMeyin  = document.getElementById("ilerleme-metin");
+  const ilerleYuzde  = document.getElementById("ilerleme-yuzde");
 
   btn.disabled = true;
-  progressAlani.style.display = "block";
+  ilerleAlani.style.display = "block";
 
-  let basarili = 0;
-  let hatali = 0;
+  let basarili = 0, hatali = 0;
 
   for (let i = 0; i < seciliDosyalar.length; i++) {
     const dosya = seciliDosyalar[i];
-    progressMetin.textContent = `Yükleniyor ${i + 1}/${seciliDosyalar.length}: ${dosya.name}`;
+    ilerleMeyin.textContent = `${i + 1}/${seciliDosyalar.length} — ${dosya.name}`;
     try {
-      await API.gorselYukle(dosya, not || null, (pct) => {
+      await API.gorselYukle(dosya, baslik, pct => {
         const genel = ((i + pct / 100) / seciliDosyalar.length) * 100;
-        progressBar.style.width = genel.toFixed(0) + "%";
+        ilerleCubuk.style.width = genel.toFixed(0) + "%";
+        ilerleYuzde.textContent = genel.toFixed(0) + "%";
       });
       basarili++;
-    } catch (e) {
-      toast(`${dosya.name}: ${e.message}`, "hata");
-      hatali++;
-    }
+    } catch (e) { toast(`${dosya.name}: ${e.message}`, "hata"); hatali++; }
   }
 
-  progressBar.style.width = "100%";
+  ilerleCubuk.style.width = "100%";
+  ilerleYuzde.textContent = "100%";
   btn.disabled = false;
-  progressAlani.style.display = "none";
+  ilerleAlani.style.display = "none";
 
   if (basarili > 0) {
-    const baslik = document.getElementById("yukle-not").value.trim();
-    document.getElementById("tamamlandi-mesaj").textContent =
-      `${basarili} görsel başarıyla yüklendi!${hatali ? " (" + hatali + " hatalı)" : ""}`;
-    document.getElementById("tamamlandi-banner").querySelector("p").textContent =
-      baslik ? `"${baslik}" başlığıyla admin panelinize ulaştı.` : "Görseller admin panelinize ulaştı.";
-    document.getElementById("tamamlandi-banner").style.display = "block";
-    document.getElementById("not-kart").style.display = "none";
+    document.getElementById("tamamlandi-baslik").textContent =
+      `${basarili} Görsel Başarıyla Yüklendi${hatali ? ` (${hatali} hatalı)` : ""}`;
+    document.getElementById("tamamlandi-alt").textContent =
+      `"${baslik}" başlığıyla yöneticilerinize iletildi.`;
+    document.getElementById("tamamlandi-kutu").style.display = "block";
+    // Formu sıfırla ama tamamlandi kutusunu göster
+    document.getElementById("baslik-kart").style.display = "none";
     document.getElementById("yukle-buton-alani").style.display = "none";
     document.getElementById("dosya-listesi").innerHTML = "";
-    document.getElementById("onizleme-grid").innerHTML = "";
+    document.getElementById("onizleme-izgarasi").innerHTML = "";
     document.getElementById("gorsel-sayaci").textContent = "";
+    document.getElementById("tumunu-kaldir-btn").style.display = "none";
     seciliDosyalar = [];
     dosyaGirdi.value = "";
   }
 }
 
 function yeniYuklemeBaslat() {
-  document.getElementById("tamamlandi-banner").style.display = "none";
-  document.getElementById("yukle-not").value = "";
+  document.getElementById("tamamlandi-kutu").style.display = "none";
+  document.getElementById("yukle-baslik").value = "";
   arabirimGuncelle();
+}
+
+// ── Toast ──
+function toast(mesaj, tip = "basari") {
+  const ikonlar = { basari: "✓", hata: "✕", bilgi: "ℹ" };
+  const konteyner = document.getElementById("toast-konteyner");
+  const el = document.createElement("div");
+  el.className = `toast-karti ${tip}`;
+  el.innerHTML = `<span class="t-ikn">${ikonlar[tip] || "ℹ"}</span><span class="t-metin">${mesaj}</span>`;
+  konteyner.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
 }
 </script>
 </body>
