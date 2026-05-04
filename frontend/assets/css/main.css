@@ -2,11 +2,11 @@
 
 :root {
   /* Renk Paleti */
-  --birincil:       #1a5c38;
-  --birincil-acik:  #237a4b;
-  --birincil-koyu:  #0f3a23;
-  --vurgu:          #2eb567;
-  --vurgu-soluk:    #e8f5ee;
+  --birincil:       #1e3a8a;
+  --birincil-acik:  #1d4ed8;
+  --birincil-koyu:  #172554;
+  --vurgu:          #3b82f6;
+  --vurgu-soluk:    #eff6ff;
 
   --beyaz:          #ffffff;
   --yuzey:          #f8fafb;
@@ -24,6 +24,7 @@
   --bilgi-soluk:    #eff6ff;
   --basari:         #166534;
   --basari-soluk:   #f0fdf4;
+  --mavi-orta:      #dbeafe;
 
   /* Gölge */
   --golge-xs: 0 1px 2px rgba(0,0,0,.05);
@@ -117,7 +118,7 @@ body {
 .giris-logo p { font-size: .78rem; opacity: .65; margin-top: 2px; }
 
 .giris-manset { font-size: 2rem; font-weight: 700; line-height: 1.25; margin-bottom: 14px; }
-.giris-manset span { color: var(--vurgu); }
+.giris-manset span { color: #93c5fd; }
 .giris-alt-metin { font-size: .92rem; opacity: .7; line-height: 1.7; }
 
 .giris-istatistik {
@@ -514,8 +515,8 @@ body {
   flex-shrink: 0;
 }
 
-.istat-ikn.yesil { background: var(--vurgu-soluk); }
-.istat-ikn.mavi  { background: var(--bilgi-soluk); }
+.istat-ikn.yesil { background: #dcfce7; }
+.istat-ikn.mavi  { background: var(--vurgu-soluk); }
 .istat-ikn.sari  { background: var(--uyari-soluk); }
 .istat-ikn.mor   { background: #f3e8ff; }
 

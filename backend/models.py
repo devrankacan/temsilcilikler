@@ -4,6 +4,13 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
+class Ayar(Base):
+    __tablename__ = "ayarlar"
+
+    anahtar = Column(String(50), primary_key=True)
+    deger = Column(Text, nullable=True)
+
+
 class Temsilcilik(Base):
     __tablename__ = "temsilcilikler"
 

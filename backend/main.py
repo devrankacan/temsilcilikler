@@ -354,6 +354,48 @@ def gorsel_sil(
     db.commit()
 
 
+# ───────────────────────── Logo ─────────────────────────
+
+SISTEM_DIR = UPLOAD_DIR / "_sistem"
+LOGO_UZANTILARI = {".jpg", ".jpeg", ".png", ".webp", ".svg"}
+
+
+@app.get("/api/logo")
+def logo_getir(db: Session = Depends(get_db)):
+    ayar = db.query(models.Ayar).filter(models.Ayar.anahtar == "logo_yolu").first()
+    if not ayar or not ayar.deger:
+        raise HTTPException(status_code=404, detail="Logo yüklenmemiş")
+    logo_yol = UPLOAD_DIR / ayar.deger
+    if not logo_yol.exists():
+        raise HTTPException(status_code=404, detail="Logo dosyası bulunamadı")
+    return FileResponse(str(logo_yol))
+
+
+@app.post("/api/logo")
+async def logo_yukle(
+    dosya: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    _: models.Kullanici = Depends(admin_gerektir),
+):
+    uzanti = Path(dosya.filename).suffix.lower()
+    if uzanti not in LOGO_UZANTILARI:
+        raise HTTPException(status_code=400, detail="Geçersiz dosya türü (jpg, png, webp, svg)")
+    SISTEM_DIR.mkdir(parents=True, exist_ok=True)
+    # Eski logoyu sil
+    for eski in SISTEM_DIR.glob("logo.*"):
+        eski.unlink(missing_ok=True)
+    logo_dosya = SISTEM_DIR / f"logo{uzanti}"
+    logo_dosya.write_bytes(await dosya.read())
+    relatif = str(logo_dosya.relative_to(UPLOAD_DIR))
+    ayar = db.query(models.Ayar).filter(models.Ayar.anahtar == "logo_yolu").first()
+    if ayar:
+        ayar.deger = relatif
+    else:
+        db.add(models.Ayar(anahtar="logo_yolu", deger=relatif))
+    db.commit()
+    return {"durum": "ok"}
+
+
 # ───────────────────────── Statik Dosyalar ─────────────────────────
 
 # Yüklenen görselleri sun

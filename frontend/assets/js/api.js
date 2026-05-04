@@ -60,6 +60,23 @@ const API = (() => {
     gorselBaslikGuncelle: (id, baslik) => istek(`/gorseller/${id}/baslik`, { method: "PUT", body: JSON.stringify({ baslik }) }),
     gorselSil: (id) => istek(`/gorseller/${id}`, { method: "DELETE" }),
 
+    // Logo
+    logoYukle: (dosya) => {
+      return new Promise((resolve, reject) => {
+        const form = new FormData();
+        form.append("dosya", dosya);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", BASE + "/logo");
+        xhr.setRequestHeader("Authorization", "Bearer " + token());
+        xhr.onload = () => {
+          if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+          else { try { reject(new Error(JSON.parse(xhr.responseText).detail)); } catch { reject(new Error("Yükleme hatası")); } }
+        };
+        xhr.onerror = () => reject(new Error("Ağ hatası"));
+        xhr.send(form);
+      });
+    },
+
     gorselYukle: (dosya, notMetni, progressCb) => {
       return new Promise((resolve, reject) => {
         const form = new FormData();

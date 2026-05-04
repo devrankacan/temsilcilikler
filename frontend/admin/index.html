@@ -13,7 +13,10 @@
   <div class="giris-sol">
     <div class="giris-sol-icerik">
       <div class="giris-logo">
-        <div class="amblemi">🌿</div>
+        <div class="amblemi" id="giris-amblemi">
+          <img id="giris-logo-img" src="/api/logo" alt="Logo" style="width:36px;height:36px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none';document.getElementById('giris-logo-emoji').style.display='flex'">
+          <span id="giris-logo-emoji" style="display:none;">🌿</span>
+        </div>
         <div>
           <h1>İyilik Derneği</h1>
           <p>Temsilcilik Yönetim Sistemi</p>
@@ -50,7 +53,10 @@
   <aside class="kenar-cubuk">
     <div class="kenar-ust">
       <div class="kenar-logo-satir">
-        <div class="kenar-amblemi">🌿</div>
+        <div class="kenar-amblemi" id="kenar-amblemi-wrap">
+          <img id="kenar-logo-img" src="/api/logo" alt="Logo" style="width:28px;height:28px;object-fit:contain;border-radius:3px;" onerror="this.style.display='none';document.getElementById('kenar-logo-emoji').style.display='flex'">
+          <span id="kenar-logo-emoji" style="display:none;">🌿</span>
+        </div>
         <div class="kenar-kurum">
           <h2>İyilik Derneği</h2>
           <p>Yönetim Paneli</p>
@@ -64,6 +70,7 @@
       <div class="kenar-nav-baslik">Yönetim</div>
       <a href="#" data-sayfa="temsilcilikler"><span class="nav-ikn">🏢</span> Temsilcilikler</a>
       <a href="#" data-sayfa="kullanicilar"><span class="nav-ikn">👥</span> Kullanıcılar</a>
+      <a href="#" data-sayfa="ayarlar"><span class="nav-ikn">⚙️</span> Ayarlar</a>
     </nav>
     <div class="kenar-alt">
       <div class="kenar-kullanici">
@@ -99,6 +106,35 @@
     </header>
 
     <main class="sayfa-icerik">
+
+      <!-- ── AYARLAR ── -->
+      <div id="sayfa-ayarlar" style="display:none;">
+        <div class="kart" style="max-width:520px;">
+          <div class="kart-baslik"><h3>⚙️ Dernek Logosu</h3></div>
+          <div class="kart-icerik">
+            <div id="mevcut-logo-wrap" style="margin-bottom:18px;text-align:center;">
+              <img id="mevcut-logo" src="/api/logo" alt="Mevcut Logo"
+                style="max-height:100px;max-width:260px;object-fit:contain;border:1px solid var(--sinir);border-radius:var(--r-md);padding:12px;background:var(--yuzey);"
+                onerror="document.getElementById('logo-yok-mesaj').style.display='block';this.style.display='none'">
+              <p id="logo-yok-mesaj" style="display:none;color:var(--metin-ucuncul);font-size:.85rem;">Henüz logo yüklenmemiş</p>
+            </div>
+            <div class="yukle-alani" id="logo-yukle-alani" onclick="document.getElementById('logo-girdi').click()" style="padding:24px;">
+              <div class="yukle-ikn" style="font-size:1.6rem;">🖼️</div>
+              <div class="yukle-baslik" style="font-size:.9rem;">Yeni logo yükle</div>
+              <div class="yukle-alt">PNG · JPG · SVG · WEBP — Şeffaf arkaplan için PNG/SVG önerilir</div>
+            </div>
+            <input type="file" id="logo-girdi" accept=".png,.jpg,.jpeg,.webp,.svg" style="display:none">
+            <div id="logo-onizleme-wrap" style="display:none;margin-top:14px;text-align:center;">
+              <img id="logo-onizleme" src="" alt="Önizleme"
+                style="max-height:100px;max-width:260px;object-fit:contain;border:2px dashed var(--vurgu);border-radius:var(--r-md);padding:10px;">
+              <p style="font-size:.8rem;color:var(--metin-ikincil);margin-top:6px;" id="logo-dosya-adi"></p>
+            </div>
+            <div id="logo-kaydet-wrap" style="display:none;margin-top:14px;">
+              <button class="btn btn-birincil btn-tam" onclick="logoKaydet()">💾 Logoyu Kaydet</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ── PANO ── -->
       <div id="sayfa-pano">
@@ -345,15 +381,52 @@ document.querySelectorAll(".kenar-nav a[data-sayfa]").forEach(a => {
 
 function sayfaYukle(sayfa) {
   aktifSayfa = sayfa;
-  const basliklar = { pano:"Pano", galeri:"Galeri", temsilcilikler:"Temsilcilikler", kullanicilar:"Kullanıcılar" };
+  const basliklar = { pano:"Pano", galeri:"Galeri", temsilcilikler:"Temsilcilikler", kullanicilar:"Kullanıcılar", ayarlar:"Ayarlar" };
   document.getElementById("sayfa-baslik").textContent = basliklar[sayfa];
-  ["pano","galeri","temsilcilikler","kullanicilar"].forEach(s =>
+  ["pano","galeri","temsilcilikler","kullanicilar","ayarlar"].forEach(s =>
     document.getElementById("sayfa-" + s).style.display = s === sayfa ? "block" : "none"
   );
   if (sayfa === "pano") panoYukle();
   else if (sayfa === "galeri") galeriInit().then(() => galeriYukle());
   else if (sayfa === "temsilcilikler") temsilciliklerYukle();
   else if (sayfa === "kullanicilar") { kullanicilariYukle(); temsilciliklerIcinYukle(); }
+}
+
+// ── LOGO ──
+document.getElementById("logo-girdi").addEventListener("change", function() {
+  const dosya = this.files[0];
+  if (!dosya) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById("logo-onizleme").src = e.target.result;
+    document.getElementById("logo-dosya-adi").textContent = dosya.name;
+    document.getElementById("logo-onizleme-wrap").style.display = "block";
+    document.getElementById("logo-kaydet-wrap").style.display = "block";
+  };
+  reader.readAsDataURL(dosya);
+});
+
+async function logoKaydet() {
+  const dosya = document.getElementById("logo-girdi").files[0];
+  if (!dosya) return;
+  try {
+    await API.logoYukle(dosya);
+    toast("Logo kaydedildi");
+    // Tüm logo görsellerini güncelle
+    const ts = "?t=" + Date.now();
+    ["mevcut-logo","giris-logo-img","kenar-logo-img"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.src = "/api/logo" + ts; el.style.display = ""; }
+    });
+    ["giris-logo-emoji","kenar-logo-emoji"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+    document.getElementById("logo-yok-mesaj").style.display = "none";
+    document.getElementById("logo-onizleme-wrap").style.display = "none";
+    document.getElementById("logo-kaydet-wrap").style.display = "none";
+    document.getElementById("logo-girdi").value = "";
+  } catch(e) { toast(e.message, "hata"); }
 }
 
 // ── PANO ──
