@@ -28,12 +28,14 @@ class KullaniciOlustur(BaseModel):
     sifre: str
     ad_soyad: str
     rol: str = "temsilci"
+    sehir: Optional[str] = None
     temsilcilik_id: Optional[int] = None
 
 
 class KullaniciGuncelle(BaseModel):
     ad_soyad: Optional[str] = None
     sifre: Optional[str] = None
+    sehir: Optional[str] = None
     temsilcilik_id: Optional[int] = None
     aktif: Optional[bool] = None
 
@@ -43,6 +45,7 @@ class KullaniciYanit(BaseModel):
     kullanici_adi: str
     ad_soyad: str
     rol: str
+    sehir: Optional[str]
     temsilcilik_id: Optional[int]
     temsilcilik: Optional[TemsilcilikYanit]
     aktif: bool

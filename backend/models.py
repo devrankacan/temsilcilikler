@@ -26,6 +26,7 @@ class Kullanici(Base):
     ad_soyad = Column(String(100), nullable=False)
     rol = Column(String(20), nullable=False, default="temsilci")  # admin | temsilci
     temsilcilik_id = Column(Integer, ForeignKey("temsilcilikler.id"), nullable=True)
+    sehir = Column(String(100), nullable=True)
     aktif = Column(Boolean, default=True)
     olusturma_tarihi = Column(DateTime, default=datetime.utcnow)
 

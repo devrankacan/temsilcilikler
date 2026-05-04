@@ -183,6 +183,7 @@ def kullanici_olustur(
         sifre_hash=sifre_hash_olustur(veri.sifre),
         ad_soyad=veri.ad_soyad,
         rol=veri.rol,
+        sehir=veri.sehir,
         temsilcilik_id=veri.temsilcilik_id,
     )
     db.add(yeni)
@@ -254,8 +255,8 @@ async def gorsel_yukle(
         raise HTTPException(status_code=404, detail="Temsilcilik bulunamadı")
 
     bugun = datetime.now().strftime("%Y-%m-%d")
-    klasor_adi = guvenli_klasor_adi(temsilcilik.ad)
-    klasor = UPLOAD_DIR / bugun / klasor_adi
+    sehir_adi = guvenli_klasor_adi(kullanici.sehir or "genel")
+    klasor = UPLOAD_DIR / bugun / sehir_adi
     klasor.mkdir(parents=True, exist_ok=True)
 
     benzersiz_ad = f"{uuid.uuid4().hex}{uzanti}"
