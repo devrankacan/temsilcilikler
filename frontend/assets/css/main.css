@@ -101,7 +101,7 @@ body {
 .giris-logo {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 6px;
   margin-bottom: 48px;
 }
 
@@ -297,7 +297,7 @@ body {
 .kenar-logo-satir {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
 }
 
 .kenar-amblemi {
