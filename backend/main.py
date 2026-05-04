@@ -232,7 +232,7 @@ def kullanici_sil(
 @app.post("/api/gorseller", response_model=schemas.GorselYanit, status_code=201)
 async def gorsel_yukle(
     dosya: UploadFile = File(...),
-    not_metni: Optional[str] = Form(None),
+    baslik: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     kullanici: models.Kullanici = Depends(mevcut_kullanici),
 ):
@@ -256,7 +256,8 @@ async def gorsel_yukle(
 
     bugun = datetime.now().strftime("%Y-%m-%d")
     sehir_adi = guvenli_klasor_adi(kullanici.sehir or "genel")
-    klasor = UPLOAD_DIR / bugun / sehir_adi
+    baslik_adi = guvenli_klasor_adi(baslik or "genel")
+    klasor = UPLOAD_DIR / bugun / sehir_adi / baslik_adi
     klasor.mkdir(parents=True, exist_ok=True)
 
     benzersiz_ad = f"{uuid.uuid4().hex}{uzanti}"
@@ -269,7 +270,7 @@ async def gorsel_yukle(
         dosya_adi=benzersiz_ad,
         dosya_yolu=str(tam_yol.relative_to(UPLOAD_DIR)),
         orijinal_ad=dosya.filename,
-        not_metni=not_metni,
+        baslik=baslik,
         boyut_bytes=len(icerik),
         tarih=bugun,
         temsilcilik_id=temsilcilik_id,
@@ -314,10 +315,10 @@ def gorsel_takvim(
     return [{"tarih": t, "adet": a} for t, a in sonuc]
 
 
-@app.put("/api/gorseller/{id}/not", response_model=schemas.GorselYanit)
-def gorsel_not_guncelle(
+@app.put("/api/gorseller/{id}/baslik", response_model=schemas.GorselYanit)
+def gorsel_baslik_guncelle(
     id: int,
-    veri: schemas.GorselNotGuncelle,
+    veri: schemas.GorselBaslikGuncelle,
     db: Session = Depends(get_db),
     kullanici: models.Kullanici = Depends(mevcut_kullanici),
 ):
@@ -325,8 +326,8 @@ def gorsel_not_guncelle(
     if not gorsel:
         raise HTTPException(status_code=404, detail="Görsel bulunamadı")
     if kullanici.rol == "temsilci" and gorsel.yukleyen_id != kullanici.id:
-        raise HTTPException(status_code=403, detail="Başkasının görseline not ekleyemezsiniz")
-    gorsel.not_metni = veri.not_metni
+        raise HTTPException(status_code=403, detail="Yetki yok")
+    gorsel.baslik = veri.baslik
     db.commit()
     db.refresh(gorsel)
     return gorsel

@@ -134,17 +134,17 @@
           <div id="onizleme-grid" class="onizleme-grid"></div>
         </div>
 
-        <!-- Not -->
+        <!-- Başlık -->
         <div class="kart" id="not-kart" style="display:none;">
-          <div class="kart-baslik">📝 Not Ekle <span style="font-weight:400;font-size:.82rem;color:var(--gri-koyu);">(isteğe bağlı)</span></div>
+          <div class="kart-baslik">🏷️ Başlık <span style="font-weight:400;font-size:.82rem;color:var(--gri-koyu);">(isteğe bağlı — klasöre de yansır)</span></div>
           <div class="form-grup" style="margin-bottom:0;">
-            <textarea id="yukle-not" placeholder="Görsel(ler) hakkında bir not yazın... Tüm seçili görsellere uygulanacak." style="min-height:90px;"></textarea>
+            <input type="text" id="yukle-not" placeholder="Örn: Yemek Dağıtımı, Giysi Yardımı, İftarlık...">
           </div>
         </div>
 
         <!-- Yükle Butonu -->
         <div id="yukle-buton-alani" style="display:none;">
-          <button class="btn btn-yesil btn-tam" id="yukle-btn" onclick="gorselleriYukle()">
+          <button class="btn btn-acik btn-tam" id="yukle-btn" onclick="gorselleriYukle()">
             📤 Yükle
           </button>
           <div id="progress-alani" style="display:none;margin-top:12px;">
@@ -327,8 +327,11 @@ async function gorselleriYukle() {
   progressAlani.style.display = "none";
 
   if (basarili > 0) {
+    const baslik = document.getElementById("yukle-not").value.trim();
     document.getElementById("tamamlandi-mesaj").textContent =
       `${basarili} görsel başarıyla yüklendi!${hatali ? " (" + hatali + " hatalı)" : ""}`;
+    document.getElementById("tamamlandi-banner").querySelector("p").textContent =
+      baslik ? `"${baslik}" başlığıyla admin panelinize ulaştı.` : "Görseller admin panelinize ulaştı.";
     document.getElementById("tamamlandi-banner").style.display = "block";
     document.getElementById("not-kart").style.display = "none";
     document.getElementById("yukle-buton-alani").style.display = "none";

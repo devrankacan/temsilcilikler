@@ -227,25 +227,25 @@
     <div id="lb-not" style="opacity:.85;"></div>
     <div id="lb-meta" style="opacity:.6;font-size:.8rem;margin-top:4px;"></div>
     <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;">
-      <button class="btn btn-mavi" onclick="event.stopPropagation();notDuzenleAc()">✏️ Not Düzenle</button>
+      <button class="btn btn-mavi" onclick="event.stopPropagation();notDuzenleAc()">✏️ Başlık Düzenle</button>
       <a id="lb-indir" href="#" download class="btn btn-gri" onclick="event.stopPropagation()">⬇️ İndir</a>
       <button class="btn btn-kirmizi" onclick="event.stopPropagation();gorselSilOnay()">🗑️ Sil</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: Not -->
+<!-- MODAL: Başlık -->
 <div class="modal-arka" id="not-modal">
   <div class="modal">
     <div class="modal-baslik">
-      Not Ekle / Düzenle
+      Başlık Düzenle
       <button class="modal-kapat" onclick="modalKapat('not-modal')">✕</button>
     </div>
     <div class="modal-icerik">
       <input type="hidden" id="not-gorsel-id">
       <div class="form-grup">
-        <label>Not</label>
-        <textarea id="not-metin" placeholder="Görsel hakkında not..."></textarea>
+        <label>Başlık</label>
+        <textarea id="not-metin" placeholder="Görsel başlığı..."></textarea>
       </div>
     </div>
     <div class="modal-alt">
@@ -431,7 +431,7 @@ function gorselKartHtml(g) {
     <div class="gorsel-kart" onclick="lightboxAc(${g.id})">
       <img src="/uploads/${g.dosya_yolu}" alt="${g.orijinal_ad}" loading="lazy">
       <div class="gorsel-alt">${sehir}${g.orijinal_ad}</div>
-      ${g.not_metni ? `<div class="gorsel-not">${g.not_metni}</div>` : ""}
+      ${g.baslik ? `<div class="gorsel-not">${g.baslik}</div>` : ""}
     </div>`;
 }
 
@@ -442,8 +442,8 @@ function lightboxAc(id) {
   acikGorsel = g;
   document.getElementById("lb-img").src = "/uploads/" + g.dosya_yolu;
   document.getElementById("lb-baslik").textContent =
-    `${g.orijinal_ad} — ${g.yukleyen.sehir ? g.yukleyen.sehir + " / " : ""}${g.temsilcilik.ad}`;
-  document.getElementById("lb-not").textContent = g.not_metni || "";
+    g.baslik || `${g.yukleyen.sehir ? g.yukleyen.sehir + " / " : ""}${g.temsilcilik.ad}`;
+  document.getElementById("lb-not").textContent = g.baslik ? `${g.yukleyen.sehir ? g.yukleyen.sehir + " / " : ""}${g.temsilcilik.ad}` : "";
   const kb = g.boyut_bytes ? (g.boyut_bytes / 1024).toFixed(0) + " KB" : "";
   document.getElementById("lb-meta").textContent =
     `${g.tarih} • ${g.yukleyen.ad_soyad}${kb ? " • " + kb : ""}`;
@@ -469,10 +469,10 @@ async function notKaydet() {
   const id = document.getElementById("not-gorsel-id").value;
   const metin = document.getElementById("not-metin").value;
   try {
-    const guncellendi = await API.gorselNotGuncelle(id, metin);
+    const guncellendi = await API.gorselBaslikGuncelle(id, metin);
     const idx = gorsellerCache.findIndex(g => g.id == id);
     if (idx !== -1) gorsellerCache[idx] = guncellendi;
-    toast("Not kaydedildi");
+    toast("Başlık kaydedildi");
     modalKapat("not-modal");
     if (aktifSayfa === "galeri") galeriYukle();
     else panoYukle();

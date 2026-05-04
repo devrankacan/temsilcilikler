@@ -41,7 +41,7 @@ class Gorsel(Base):
     dosya_adi = Column(String(255), nullable=False)
     dosya_yolu = Column(String(500), nullable=False)
     orijinal_ad = Column(String(255), nullable=False)
-    not_metni = Column(Text, nullable=True)
+    baslik = Column(Text, nullable=True)
     boyut_bytes = Column(Integer, nullable=True)
     yuklenme_tarihi = Column(DateTime, default=datetime.utcnow)
     tarih = Column(String(10), nullable=False)  # YYYY-MM-DD

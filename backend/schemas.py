@@ -53,8 +53,8 @@ class KullaniciYanit(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class GorselNotGuncelle(BaseModel):
-    not_metni: str
+class GorselBaslikGuncelle(BaseModel):
+    baslik: str
 
 
 class GorselYanit(BaseModel):
@@ -62,7 +62,7 @@ class GorselYanit(BaseModel):
     dosya_adi: str
     dosya_yolu: str
     orijinal_ad: str
-    not_metni: Optional[str]
+    baslik: Optional[str]
     boyut_bytes: Optional[int]
     yuklenme_tarihi: datetime
     tarih: str

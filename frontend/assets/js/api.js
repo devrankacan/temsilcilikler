@@ -57,14 +57,14 @@ const API = (() => {
       return istek("/gorseller" + (q ? "?" + q : ""));
     },
     gorselTakvim: () => istek("/gorseller/takvim"),
-    gorselNotGuncelle: (id, not) => istek(`/gorseller/${id}/not`, { method: "PUT", body: JSON.stringify({ not_metni: not }) }),
+    gorselBaslikGuncelle: (id, baslik) => istek(`/gorseller/${id}/baslik`, { method: "PUT", body: JSON.stringify({ baslik }) }),
     gorselSil: (id) => istek(`/gorseller/${id}`, { method: "DELETE" }),
 
     gorselYukle: (dosya, notMetni, progressCb) => {
       return new Promise((resolve, reject) => {
         const form = new FormData();
         form.append("dosya", dosya);
-        if (notMetni) form.append("not_metni", notMetni);
+        if (notMetni) form.append("baslik", notMetni);
 
         const xhr = new XMLHttpRequest();
         xhr.open("POST", BASE + "/gorseller");
