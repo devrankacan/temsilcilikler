@@ -332,7 +332,7 @@
 <!-- ══════ LİGHTBOX ══════ -->
 <div class="lightbox" id="lightbox">
   <button class="lb-kapat-btn" onclick="lightboxKapat()">✕</button>
-  <img class="lb-gorsel" id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  <div id="lb-medya-kap" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;max-width:90vw;max-height:80vh;"></div>
   <div class="lb-bilgi-alani">
     <div class="lb-baslik-metin" id="lb-baslik"></div>
     <div class="lb-alt-metin" id="lb-meta"></div>
@@ -628,10 +628,22 @@ function filtreTemizle() {
   galeriYukle();
 }
 
+const VIDEO_UZANTILARI = /\.(mp4|mov|avi|mkv|webm)$/i;
+
+function medyaOnizleme(dosya_yolu, baslik) {
+  if (VIDEO_UZANTILARI.test(dosya_yolu)) {
+    return `<video src="/uploads/${dosya_yolu}" preload="metadata" muted style="width:100%;height:100%;object-fit:cover;"></video>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+              <span style="font-size:2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));">▶</span>
+            </div>`;
+  }
+  return `<img src="/uploads/${dosya_yolu}" alt="${baslik}" loading="lazy">`;
+}
+
 function gorselKartHtml(g) {
   return `
-    <div class="gorsel-karti" onclick="lightboxAc(${g.id})">
-      <img src="/uploads/${g.dosya_yolu}" alt="${g.baslik || g.orijinal_ad}" loading="lazy">
+    <div class="gorsel-karti" onclick="lightboxAc(${g.id})" style="position:relative;">
+      ${medyaOnizleme(g.dosya_yolu, g.baslik || g.orijinal_ad)}
       <div class="gorsel-bilgi">
         <div class="gorsel-baslik">${g.baslik || g.orijinal_ad}</div>
         <div class="gorsel-meta">${g.yukleyen.sehir || ""} ${g.yukleyen.sehir && g.temsilcilik ? "·" : ""} ${g.temsilcilik.ad}</div>
@@ -644,7 +656,13 @@ function lightboxAc(id) {
   const g = gorsellerCache.find(x => x.id === id);
   if (!g) return;
   acikGorsel = g;
-  document.getElementById("lb-img").src = "/uploads/" + g.dosya_yolu;
+  const kap = document.getElementById("lb-medya-kap");
+  const url = "/uploads/" + g.dosya_yolu;
+  if (VIDEO_UZANTILARI.test(g.dosya_yolu)) {
+    kap.innerHTML = `<video src="${url}" controls autoplay style="max-width:90vw;max-height:80vh;border-radius:8px;"></video>`;
+  } else {
+    kap.innerHTML = `<img src="${url}" alt="${g.baslik || g.orijinal_ad}" style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:8px;">`;
+  }
   document.getElementById("lb-baslik").textContent = g.baslik || g.orijinal_ad;
   const kb = g.boyut_bytes ? (g.boyut_bytes / 1024).toFixed(0) + " KB" : "";
   document.getElementById("lb-meta").textContent =
@@ -656,6 +674,7 @@ function lightboxAc(id) {
 
 function lightboxKapat() {
   document.getElementById("lightbox").classList.remove("acik");
+  document.getElementById("lb-medya-kap").innerHTML = "";
   acikGorsel = null;
 }
 

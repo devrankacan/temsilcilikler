@@ -217,9 +217,9 @@
             <div class="yukle-alani" id="yukle-alani" onclick="document.getElementById('dosya-girdi').click()">
               <div class="yukle-ikn">📁</div>
               <div class="yukle-baslik">Tıklayın veya sürükleyip bırakın</div>
-              <div class="yukle-alt">JPG · PNG · WEBP · HEIC &nbsp;·&nbsp; Orijinal çözünürlük korunur</div>
+              <div class="yukle-alt">JPG · PNG · WEBP · HEIC · MP4 · MOV &nbsp;·&nbsp; Orijinal kalite korunur</div>
             </div>
-            <input type="file" id="dosya-girdi" accept="image/*" multiple style="display:none">
+            <input type="file" id="dosya-girdi" accept="image/*,video/*" multiple style="display:none">
             <div class="gorsel-sayac-satiri">
               <span id="gorsel-sayaci"></span>
               <button class="btn btn-ikincil btn-sm" id="tumunu-kaldir-btn" onclick="tumunuKaldir()" style="display:none;">Tümünü Kaldır</button>
@@ -339,12 +339,15 @@ yukleAlani.addEventListener("drop", e => {
   dosyaEkle(Array.from(e.dataTransfer.files));
 });
 
+const VIDEO_UZANTILARI = /\.(mp4|mov|avi|mkv|webm)$/i;
+const GORSEL_UZANTILARI = /\.(jpe?g|png|gif|webp|heic|heif)$/i;
+
 function dosyaEkle(yeniDosyalar) {
-  const izinli = ["image/jpeg","image/jpg","image/png","image/gif","image/webp","image/heic","image/heif"];
   yeniDosyalar.forEach(d => {
-    if (!izinli.includes(d.type) && !d.name.toLowerCase().match(/\.(heic|heif)$/)) {
-      toast(`${d.name} desteklenmiyor`, "hata"); return;
-    }
+    const isim = d.name.toLowerCase();
+    const gecerli = d.type.startsWith("image/") || d.type.startsWith("video/")
+      || GORSEL_UZANTILARI.test(isim) || VIDEO_UZANTILARI.test(isim);
+    if (!gecerli) { toast(`${d.name} desteklenmiyor`, "hata"); return; }
     if (!seciliDosyalar.find(x => x.name === d.name && x.size === d.size))
       seciliDosyalar.push(d);
   });
@@ -371,9 +374,9 @@ function arabirimGuncelle() {
 
   liste.innerHTML = seciliDosyalar.map((d, i) => `
     <li class="dosya-satir">
-      <span class="dosya-ikn">🖼️</span>
+      <span class="dosya-ikn">${VIDEO_UZANTILARI.test(d.name) ? "🎬" : "🖼️"}</span>
       <span class="dosya-adi">${d.name}</span>
-      <span class="dosya-boyut">${(d.size / 1024).toFixed(0)} KB</span>
+      <span class="dosya-boyut">${(d.size / 1024 / 1024).toFixed(1)} MB</span>
       <button class="kaldir-btn" onclick="dosyaKaldir(${i})" title="Kaldır">✕</button>
     </li>`).join("");
 
@@ -381,11 +384,20 @@ function arabirimGuncelle() {
   seciliDosyalar.slice(0, 6).forEach(d => {
     const div = document.createElement("div");
     div.className = "onizleme-karti";
-    const img = document.createElement("img");
-    const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; };
-    reader.readAsDataURL(d);
-    div.appendChild(img);
+    if (VIDEO_UZANTILARI.test(d.name) || d.type.startsWith("video/")) {
+      const video = document.createElement("video");
+      video.src = URL.createObjectURL(d);
+      video.preload = "metadata";
+      video.muted = true;
+      video.style.cssText = "width:100%;height:100%;object-fit:cover;";
+      div.appendChild(video);
+    } else {
+      const img = document.createElement("img");
+      const reader = new FileReader();
+      reader.onload = e => { img.src = e.target.result; };
+      reader.readAsDataURL(d);
+      div.appendChild(img);
+    }
     izg.appendChild(div);
   });
   if (seciliDosyalar.length > 6) {

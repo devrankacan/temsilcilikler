@@ -39,7 +39,8 @@ app.add_middleware(
 UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "/uploads"))
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-IZIN_VERILEN_UZANTILAR = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif"}
+IZIN_VERILEN_UZANTILAR = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic", ".heif",
+                          ".mp4", ".mov", ".avi", ".mkv", ".webm"}
 
 
 def guvenli_klasor_adi(isim: str) -> str:
