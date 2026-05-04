@@ -8,7 +8,8 @@ const API = (() => {
   async function istek(yol, secenekler = {}) {
     const headers = { ...(secenekler.headers || {}) };
     if (token()) headers["Authorization"] = "Bearer " + token();
-    if (!(secenekler.body instanceof FormData)) {
+    // Sadece Content-Type set edilmemişse ve FormData değilse JSON ekle
+    if (!(secenekler.body instanceof FormData) && !headers["Content-Type"]) {
       headers["Content-Type"] = "application/json";
     }
     const yanit = await fetch(BASE + yol, { ...secenekler, headers });
@@ -20,7 +21,12 @@ const API = (() => {
     }
     if (!yanit.ok) {
       const hata = await yanit.json().catch(() => ({ detail: "Sunucu hatası" }));
-      throw new Error(hata.detail || "İşlem başarısız");
+      // FastAPI bazen detail'i array olarak döner
+      const detail = hata.detail;
+      const mesaj = Array.isArray(detail)
+        ? (detail[0]?.msg || "Geçersiz istek")
+        : (detail || "İşlem başarısız");
+      throw new Error(mesaj);
     }
     if (yanit.status === 204) return null;
     return yanit.json();
