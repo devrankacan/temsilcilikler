@@ -9,9 +9,10 @@ services:
       - SECRET_KEY=${SECRET_KEY:-BURAYA_GUCLU_BIR_ANAHTAR_YAZ_degistir}
       - UPLOAD_DIR=/uploads
       - SCRAPER_SECRET=${SCRAPER_SECRET:-scraper-secret-key}
+      - DATABASE_URL=sqlite:////data/iyilik.db
     volumes:
       - ./uploads:/uploads
-      - ./data:/app
+      - ./data:/data
     networks:
       - iyilik_net
 
