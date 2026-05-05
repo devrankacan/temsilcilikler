@@ -72,6 +72,7 @@ const API = (() => {
       const q = new URLSearchParams(params).toString();
       return istek("/sosyal-medya/icerikler" + (q ? "?" + q : ""));
     },
+    sosyalMedyaTara: () => istek("/sosyal-medya/tara", { method: "POST" }),
 
     // Logo
     logoYukle: (dosya) => {

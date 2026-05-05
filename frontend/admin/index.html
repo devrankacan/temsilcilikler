@@ -116,10 +116,13 @@
 
       <!-- ── SOSYAL MEDYA ── -->
       <div id="sayfa-sosyal-medya" style="display:none;">
-        <!-- Üst başlık -->
-        <div style="margin-bottom:20px;">
-          <h2 style="font-size:1.2rem;font-weight:700;color:var(--metin-ana);margin:0;">📱 Sosyal Medya Takibi</h2>
-          <p style="font-size:.82rem;color:var(--metin-ust);margin:4px 0 0;">Her ayın 1'inde otomatik güncellenir · Son tarama: <span id="sm-son-tarama">–</span></p>
+        <!-- Üst başlık + tara butonu -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2 style="font-size:1.2rem;font-weight:700;color:var(--metin-ana);margin:0;">📱 Sosyal Medya Takibi</h2>
+            <p style="font-size:.82rem;color:var(--metin-ust);margin:4px 0 0;">Her ayın 1'inde otomatik güncellenir · Son tarama: <span id="sm-son-tarama">–</span></p>
+          </div>
+          <button class="btn btn-birincil" id="sm-tara-btn" onclick="sosyalMedyaTara()">🔄 Şimdi Tara</button>
         </div>
 
         <!-- Platform kartları -->
@@ -1141,6 +1144,21 @@ function smIceriklerYukle() {
   }).join("");
 }
 
+async function sosyalMedyaTara() {
+  const btn = document.getElementById("sm-tara-btn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Taranıyor...";
+  try {
+    await API.sosyalMedyaTara();
+    toast("Tarama başlatıldı! Birkaç dakika içinde veriler güncellenecek.", "bilgi");
+    setTimeout(() => sosyalMedyaYukle(), 15000);
+  } catch (e) {
+    toast("Tarama başlatılamadı: " + e.message, "hata");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔄 Şimdi Tara";
+  }
+}
 </script>
 </body>
 </html>
