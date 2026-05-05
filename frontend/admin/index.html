@@ -962,10 +962,41 @@ function toast(mesaj, tip = "basari") {
 // ══════════════════ SOSYAL MEDYA ══════════════════
 
 const SM_RENKLER = {
-  instagram: { renk: "#e1306c", arka: "rgba(225,48,108,.12)", ikon: "📸" },
-  facebook:  { renk: "#1877f2", arka: "rgba(24,119,242,.12)", ikon: "👍" },
-  x:         { renk: "#000000", arka: "rgba(0,0,0,.08)",      ikon: "𝕏" },
-  youtube:   { renk: "#ff0000", arka: "rgba(255,0,0,.1)",     ikon: "▶" },
+  instagram: {
+    renk: "#e1306c",
+    arka: "rgba(225,48,108,.12)",
+    ikon: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/>
+        <stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/>
+        <stop offset="100%" stop-color="#bc1888"/>
+      </linearGradient></defs>
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="url(#ig)" stroke-width="2" fill="none"/>
+      <circle cx="12" cy="12" r="4.5" stroke="url(#ig)" stroke-width="2" fill="none"/>
+      <circle cx="17.5" cy="6.5" r="1.2" fill="#e1306c"/>
+    </svg>`,
+  },
+  facebook: {
+    renk: "#1877f2",
+    arka: "rgba(24,119,242,.12)",
+    ikon: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#1877f2" d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.931-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+    </svg>`,
+  },
+  x: {
+    renk: "#000000",
+    arka: "rgba(0,0,0,.08)",
+    ikon: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#000" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.258 5.632 5.906-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>`,
+  },
+  youtube: {
+    renk: "#ff0000",
+    arka: "rgba(255,0,0,.1)",
+    ikon: `<svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ff0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>`,
+  },
 };
 
 let smIstatistikler = [];
