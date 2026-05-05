@@ -66,6 +66,14 @@ const API = (() => {
     gorselBaslikGuncelle: (id, baslik) => istek(`/gorseller/${id}/baslik`, { method: "PUT", body: JSON.stringify({ baslik }) }),
     gorselSil: (id) => istek(`/gorseller/${id}`, { method: "DELETE" }),
 
+    // Sosyal Medya
+    sosyalMedyaIstatistikler: () => istek("/sosyal-medya/istatistikler"),
+    sosyalMedyaIcerikler: (params = {}) => {
+      const q = new URLSearchParams(params).toString();
+      return istek("/sosyal-medya/icerikler" + (q ? "?" + q : ""));
+    },
+    sosyalMedyaTara: () => istek("/sosyal-medya/tara", { method: "POST" }),
+
     // Logo
     logoYukle: (dosya) => {
       return new Promise((resolve, reject) => {

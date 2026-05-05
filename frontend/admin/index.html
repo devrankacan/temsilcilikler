@@ -72,6 +72,8 @@
       <div class="kenar-nav-baslik">Genel</div>
       <a href="#" data-sayfa="pano" class="aktif"><span class="nav-ikn">📊</span> Pano</a>
       <a href="#" data-sayfa="galeri"><span class="nav-ikn">🖼️</span> Galeri</a>
+      <div class="kenar-nav-baslik">Analitik</div>
+      <a href="#" data-sayfa="sosyal-medya"><span class="nav-ikn">📱</span> Sosyal Medya</a>
       <div class="kenar-nav-baslik">Yönetim</div>
       <a href="#" data-sayfa="temsilcilikler"><span class="nav-ikn">🏢</span> Temsilcilikler</a>
       <a href="#" data-sayfa="kullanicilar"><span class="nav-ikn">👥</span> Kullanıcılar</a>
@@ -111,6 +113,75 @@
     </header>
 
     <main class="sayfa-icerik">
+
+      <!-- ── SOSYAL MEDYA ── -->
+      <div id="sayfa-sosyal-medya" style="display:none;">
+        <!-- Üst başlık + tara butonu -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2 style="font-size:1.2rem;font-weight:700;color:var(--metin-ana);margin:0;">📱 Sosyal Medya Takibi</h2>
+            <p style="font-size:.82rem;color:var(--metin-ust);margin:4px 0 0;">Her ayın 1'inde otomatik güncellenir · Son tarama: <span id="sm-son-tarama">–</span></p>
+          </div>
+          <button class="btn btn-birincil" id="sm-tara-btn" onclick="sosyalMedyaTara()">🔄 Şimdi Tara</button>
+        </div>
+
+        <!-- Platform kartları -->
+        <div id="sm-platform-kartlar" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px;"></div>
+
+        <!-- Takipçi büyüme grafiği -->
+        <div class="kart" style="margin-bottom:20px;">
+          <div class="kart-baslik"><h3>📈 Aylık Takipçi Büyümesi</h3></div>
+          <div class="kart-icerik" style="padding:16px;">
+            <div style="position:relative;height:260px;">
+              <canvas id="sm-takipci-grafik"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Etkileşim grafiği -->
+        <div class="kart" style="margin-bottom:20px;">
+          <div class="kart-baslik"><h3>💬 Aylık Etkileşim</h3></div>
+          <div class="kart-icerik" style="padding:16px;">
+            <div style="position:relative;height:220px;">
+              <canvas id="sm-etkilesim-grafik"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- En çok etkileşim alan 5 içerik -->
+        <div class="kart">
+          <div class="kart-baslik">
+            <h3>🏆 En Çok Etkileşim Alan 5 İçerik</h3>
+            <select id="sm-en-iyi-platform" onchange="smEnIyiYukle()" style="font-size:.82rem;padding:4px 8px;border:1px solid var(--kenar);border-radius:6px;background:#fff;">
+              <option value="">Tüm Platformlar</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="x">X (Twitter)</option>
+              <option value="youtube">YouTube</option>
+            </select>
+          </div>
+          <div class="kart-icerik" style="padding:0;">
+            <div id="sm-en-iyi-liste"></div>
+          </div>
+        </div>
+
+        <!-- Bu aydaki içerikler listesi -->
+        <div class="kart" style="margin-top:20px;">
+          <div class="kart-baslik">
+            <h3>📋 Bu Aydaki İçerikler</h3>
+            <select id="sm-icerik-platform" onchange="smIceriklerYukle()" style="font-size:.82rem;padding:4px 8px;border:1px solid var(--kenar);border-radius:6px;background:#fff;">
+              <option value="">Tüm Platformlar</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="x">X (Twitter)</option>
+              <option value="youtube">YouTube</option>
+            </select>
+          </div>
+          <div class="kart-icerik" style="padding:0;">
+            <div id="sm-icerik-liste"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ── AYARLAR ── -->
       <div id="sayfa-ayarlar" style="display:none;">
@@ -406,13 +477,14 @@ document.querySelectorAll(".kenar-nav a[data-sayfa]").forEach(a => {
 
 function sayfaYukle(sayfa) {
   aktifSayfa = sayfa;
-  const basliklar = { pano:"Pano", galeri:"Galeri", temsilcilikler:"Temsilcilikler", kullanicilar:"Kullanıcılar", ayarlar:"Ayarlar" };
-  document.getElementById("sayfa-baslik").textContent = basliklar[sayfa];
-  ["pano","galeri","temsilcilikler","kullanicilar","ayarlar"].forEach(s =>
+  const basliklar = { pano:"Pano", galeri:"Galeri", "sosyal-medya":"Sosyal Medya", temsilcilikler:"Temsilcilikler", kullanicilar:"Kullanıcılar", ayarlar:"Ayarlar" };
+  document.getElementById("sayfa-baslik").textContent = basliklar[sayfa] || sayfa;
+  ["pano","galeri","sosyal-medya","temsilcilikler","kullanicilar","ayarlar"].forEach(s =>
     document.getElementById("sayfa-" + s).style.display = s === sayfa ? "block" : "none"
   );
   if (sayfa === "pano") panoYukle();
   else if (sayfa === "galeri") galeriInit().then(() => galeriYukle());
+  else if (sayfa === "sosyal-medya") sosyalMedyaYukle();
   else if (sayfa === "temsilcilikler") temsilciliklerYukle();
   else if (sayfa === "kullanicilar") { kullanicilariYukle(); temsilciliklerIcinYukle(); }
 }
@@ -885,6 +957,207 @@ function toast(mesaj, tip = "basari") {
   el.innerHTML = `<span class="t-ikn">${ikonlar[tip] || "ℹ"}</span><span class="t-metin">${mesaj}</span>`;
   konteyner.appendChild(el);
   setTimeout(() => el.remove(), 4000);
+}
+
+// ══════════════════ SOSYAL MEDYA ══════════════════
+
+const SM_RENKLER = {
+  instagram: { renk: "#e1306c", arka: "rgba(225,48,108,.12)", ikon: "📸" },
+  facebook:  { renk: "#1877f2", arka: "rgba(24,119,242,.12)", ikon: "👍" },
+  x:         { renk: "#000000", arka: "rgba(0,0,0,.08)",      ikon: "𝕏" },
+  youtube:   { renk: "#ff0000", arka: "rgba(255,0,0,.1)",     ikon: "▶" },
+};
+
+let smIstatistikler = [];
+let smIcerikler = [];
+let smTakipciGrafik = null;
+let smEtkilesimGrafik = null;
+
+async function sosyalMedyaYukle() {
+  try {
+    [smIstatistikler, smIcerikler] = await Promise.all([
+      API.sosyalMedyaIstatistikler(),
+      API.sosyalMedyaIcerikler(),
+    ]);
+    smPlatformKartlariCiz();
+    smTakipciGrafikCiz();
+    smEtkilesimGrafikCiz();
+    smEnIyiYukle();
+    smIceriklerYukle();
+    if (smIstatistikler.length > 0) {
+      const enYeni = smIstatistikler[0].kayit_tarihi?.substring(0, 16).replace("T", " ") || "–";
+      document.getElementById("sm-son-tarama").textContent = enYeni;
+    }
+  } catch (e) {
+    toast("Sosyal medya verileri yüklenemedi: " + e.message, "hata");
+  }
+}
+
+function smSonAyVerisi(platform) {
+  return smIstatistikler.filter(s => s.platform === platform).sort((a, b) => b.ay.localeCompare(a.ay));
+}
+
+function smBuyumeHesapla(platform) {
+  const kayitlar = smSonAyVerisi(platform);
+  if (kayitlar.length < 2) return null;
+  return kayitlar[0].takipci - kayitlar[1].takipci;
+}
+
+function smPlatformKartlariCiz() {
+  const platformlar = ["instagram", "facebook", "x", "youtube"];
+  const konteyner = document.getElementById("sm-platform-kartlar");
+  konteyner.innerHTML = platformlar.map(p => {
+    const kayitlar = smSonAyVerisi(p);
+    const son = kayitlar[0];
+    const r = SM_RENKLER[p];
+    const takipci = son?.takipci ?? "–";
+    const buyume = smBuyumeHesapla(p);
+    const buyumeMetni = buyume === null ? "" :
+      buyume > 0 ? `<span style="color:#16a34a;font-size:.75rem;">▲ ${buyume.toLocaleString("tr")}</span>` :
+      buyume < 0 ? `<span style="color:#dc2626;font-size:.75rem;">▼ ${Math.abs(buyume).toLocaleString("tr")}</span>` :
+      `<span style="font-size:.75rem;color:var(--metin-ust);">= değişmedi</span>`;
+    const etkilesim = son?.etkilesim?.toLocaleString("tr") ?? "–";
+    const icerikSayisi = son?.icerik_sayisi ?? "–";
+    return `<div style="background:#fff;border:1px solid var(--kenar);border-radius:var(--r-md);padding:18px;border-top:3px solid ${r.renk};">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="width:36px;height:36px;border-radius:8px;background:${r.arka};display:flex;align-items:center;justify-content:center;font-size:1.1rem;">${r.ikon}</div>
+        <div style="font-weight:700;font-size:.95rem;text-transform:capitalize;">${p === "x" ? "X (Twitter)" : p.charAt(0).toUpperCase() + p.slice(1)}</div>
+      </div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--metin-ana);line-height:1;">${typeof takipci === "number" ? takipci.toLocaleString("tr") : takipci}</div>
+      <div style="font-size:.75rem;color:var(--metin-ust);margin:2px 0 8px;">takipçi ${buyumeMetni}</div>
+      <div style="display:flex;gap:16px;font-size:.78rem;color:var(--metin-ust);padding-top:10px;border-top:1px solid var(--kenar);">
+        <div><span style="font-weight:600;color:var(--metin-ana);">${etkilesim}</span> etkileşim</div>
+        <div><span style="font-weight:600;color:var(--metin-ana);">${icerikSayisi}</span> içerik</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function smTakipciGrafikCiz() {
+  const ctx = document.getElementById("sm-takipci-grafik").getContext("2d");
+  if (smTakipciGrafik) smTakipciGrafik.destroy();
+
+  const aylar = [...new Set(smIstatistikler.map(s => s.ay))].sort();
+  const platformlar = ["instagram", "facebook", "x", "youtube"];
+
+  smTakipciGrafik = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: aylar,
+      datasets: platformlar.map(p => ({
+        label: p === "x" ? "X (Twitter)" : p.charAt(0).toUpperCase() + p.slice(1),
+        data: aylar.map(ay => smIstatistikler.find(s => s.platform === p && s.ay === ay)?.takipci ?? null),
+        borderColor: SM_RENKLER[p].renk,
+        backgroundColor: SM_RENKLER[p].arka,
+        tension: 0.3,
+        spanGaps: true,
+        pointRadius: 4,
+      })),
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" } },
+      scales: { y: { beginAtZero: false, ticks: { callback: v => v.toLocaleString("tr") } } },
+    },
+  });
+}
+
+function smEtkilesimGrafikCiz() {
+  const ctx = document.getElementById("sm-etkilesim-grafik").getContext("2d");
+  if (smEtkilesimGrafik) smEtkilesimGrafik.destroy();
+
+  const aylar = [...new Set(smIstatistikler.map(s => s.ay))].sort();
+  const platformlar = ["instagram", "facebook", "x", "youtube"];
+
+  smEtkilesimGrafik = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: aylar,
+      datasets: platformlar.map(p => ({
+        label: p === "x" ? "X (Twitter)" : p.charAt(0).toUpperCase() + p.slice(1),
+        data: aylar.map(ay => smIstatistikler.find(s => s.platform === p && s.ay === ay)?.etkilesim ?? 0),
+        backgroundColor: SM_RENKLER[p].renk,
+      })),
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" } },
+      scales: { x: { stacked: false }, y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString("tr") } } },
+    },
+  });
+}
+
+function smEnIyiYukle() {
+  const platform = document.getElementById("sm-en-iyi-platform").value;
+  const filtrelenmis = smIcerikler
+    .filter(ic => !platform || ic.platform === platform)
+    .map(ic => ({ ...ic, toplam: ic.begeni + ic.yorum + ic.paylasim }))
+    .sort((a, b) => b.toplam - a.toplam)
+    .slice(0, 5);
+
+  const liste = document.getElementById("sm-en-iyi-liste");
+  if (!filtrelenmis.length) {
+    liste.innerHTML = `<div style="padding:24px;text-align:center;color:var(--metin-ust);font-size:.85rem;">Henüz içerik verisi yok.</div>`;
+    return;
+  }
+  liste.innerHTML = filtrelenmis.map((ic, i) => {
+    const r = SM_RENKLER[ic.platform] || { renk: "#888", ikon: "📄" };
+    const baslik = (ic.baslik || "İsimsiz içerik").substring(0, 100);
+    return `<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--kenar);${i === filtrelenmis.length - 1 ? "border-bottom:none;" : ""}">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--metin-ust);min-width:24px;text-align:center;">${i + 1}</div>
+      <div style="width:32px;height:32px;border-radius:6px;background:${r.arka};display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;">${r.ikon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.85rem;font-weight:600;color:var(--metin-ana);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${baslik}</div>
+        <div style="font-size:.75rem;color:var(--metin-ust);margin-top:2px;">
+          <span style="color:${r.renk};font-weight:600;">${ic.platform === "x" ? "X" : ic.platform.charAt(0).toUpperCase() + ic.platform.slice(1)}</span>
+          · ${ic.ay} · 👍 ${ic.begeni.toLocaleString("tr")} · 💬 ${ic.yorum.toLocaleString("tr")}${ic.paylasim ? ` · 🔁 ${ic.paylasim.toLocaleString("tr")}` : ""}
+        </div>
+      </div>
+      ${ic.url ? `<a href="${ic.url}" target="_blank" style="font-size:.75rem;color:var(--vurgu);text-decoration:none;flex-shrink:0;">→ Gör</a>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function smIceriklerYukle() {
+  const platform = document.getElementById("sm-icerik-platform").value;
+  const suankiAy = new Date().toISOString().substring(0, 7);
+  const filtrelenmis = smIcerikler
+    .filter(ic => (!platform || ic.platform === platform) && ic.ay === suankiAy)
+    .sort((a, b) => (b.begeni + b.yorum + b.paylasim) - (a.begeni + a.yorum + a.paylasim));
+
+  const liste = document.getElementById("sm-icerik-liste");
+  if (!filtrelenmis.length) {
+    liste.innerHTML = `<div style="padding:24px;text-align:center;color:var(--metin-ust);font-size:.85rem;">Bu ay için içerik verisi bulunamadı.</div>`;
+    return;
+  }
+  liste.innerHTML = filtrelenmis.map(ic => {
+    const r = SM_RENKLER[ic.platform] || { renk: "#888", ikon: "📄" };
+    const baslik = (ic.baslik || "İsimsiz içerik").substring(0, 120);
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--kenar);">
+      <div style="width:28px;height:28px;border-radius:6px;background:${r.arka};display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;">${r.ikon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.83rem;color:var(--metin-ana);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${baslik}</div>
+        <div style="font-size:.72rem;color:var(--metin-ust);margin-top:2px;">👍 ${ic.begeni.toLocaleString("tr")} · 💬 ${ic.yorum.toLocaleString("tr")}${ic.paylasim ? ` · 🔁 ${ic.paylasim.toLocaleString("tr")}` : ""}${ic.goruntuleme ? ` · 👁 ${ic.goruntuleme.toLocaleString("tr")}` : ""}</div>
+      </div>
+      ${ic.url ? `<a href="${ic.url}" target="_blank" style="font-size:.72rem;color:var(--vurgu);text-decoration:none;flex-shrink:0;">→</a>` : ""}
+    </div>`;
+  }).join("");
+}
+
+async function sosyalMedyaTara() {
+  const btn = document.getElementById("sm-tara-btn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Taranıyor...";
+  try {
+    await API.sosyalMedyaTara();
+    toast("Tarama başlatıldı! Birkaç dakika içinde veriler güncellenecek.", "bilgi");
+    setTimeout(() => sosyalMedyaYukle(), 15000);
+  } catch (e) {
+    toast("Tarama başlatılamadı: " + e.message, "hata");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🔄 Şimdi Tara";
+  }
 }
 </script>
 </body>

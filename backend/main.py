@@ -413,6 +413,120 @@ async def logo_yukle(
     return {"durum": "ok"}
 
 
+# ───────────────────────── Sosyal Medya ─────────────────────────
+
+SCRAPER_SECRET = os.getenv("SCRAPER_SECRET", "scraper-secret-key")
+
+
+def admin_kontrol(kullanici: models.Kullanici = Depends(mevcut_kullanici)):
+    if kullanici.rol != "admin":
+        raise HTTPException(status_code=403, detail="Yalnızca admin erişebilir")
+    return kullanici
+
+
+@app.get("/api/sosyal-medya/istatistikler")
+def sosyal_medya_istatistikler(db: Session = Depends(get_db), _=Depends(admin_kontrol)):
+    satirlar = db.query(models.SosyalMedyaIstatistik).order_by(
+        models.SosyalMedyaIstatistik.ay.desc()
+    ).all()
+    return [
+        {
+            "id": s.id, "platform": s.platform, "ay": s.ay,
+            "takipci": s.takipci, "etkilesim": s.etkilesim,
+            "icerik_sayisi": s.icerik_sayisi,
+            "kayit_tarihi": s.kayit_tarihi.isoformat() if s.kayit_tarihi else None,
+        }
+        for s in satirlar
+    ]
+
+
+@app.get("/api/sosyal-medya/icerikler")
+def sosyal_medya_icerikler(
+    platform: Optional[str] = None,
+    ay: Optional[str] = None,
+    db: Session = Depends(get_db),
+    _=Depends(admin_kontrol),
+):
+    q = db.query(models.SosyalMedyaIcerik)
+    if platform:
+        q = q.filter(models.SosyalMedyaIcerik.platform == platform)
+    if ay:
+        q = q.filter(models.SosyalMedyaIcerik.ay == ay)
+    icerikler = q.order_by(
+        models.SosyalMedyaIcerik.ay.desc(),
+        (models.SosyalMedyaIcerik.begeni + models.SosyalMedyaIcerik.yorum + models.SosyalMedyaIcerik.paylasim).desc()
+    ).all()
+    return [
+        {
+            "id": c.id, "platform": c.platform, "ay": c.ay,
+            "icerik_id": c.icerik_id, "baslik": c.baslik, "url": c.url,
+            "begeni": c.begeni, "yorum": c.yorum, "paylasim": c.paylasim,
+            "goruntuleme": c.goruntuleme, "tarih": c.tarih,
+        }
+        for c in icerikler
+    ]
+
+
+@app.post("/api/sosyal-medya/tara")
+async def sosyal_medya_tara(_=Depends(admin_kontrol)):
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.post("http://scraper:3001/tara", timeout=600)
+            return r.json()
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Scraper ulaşılamıyor: {str(e)}")
+
+
+# Scraper servisi tarafından çağrılır
+@app.post("/api/scraper/istatistik")
+def scraper_istatistik_kaydet(veri: dict, request: Request, db: Session = Depends(get_db)):
+    if request.headers.get("x-scraper-secret") != SCRAPER_SECRET:
+        raise HTTPException(status_code=403)
+    platform = veri.get("platform")
+    ay = veri.get("ay")
+    mevcut = db.query(models.SosyalMedyaIstatistik).filter_by(platform=platform, ay=ay).first()
+    if mevcut:
+        mevcut.takipci = veri.get("takipci", mevcut.takipci)
+        mevcut.etkilesim = veri.get("etkilesim", mevcut.etkilesim)
+        mevcut.icerik_sayisi = veri.get("icerik_sayisi", mevcut.icerik_sayisi)
+        mevcut.kayit_tarihi = datetime.utcnow()
+    else:
+        db.add(models.SosyalMedyaIstatistik(
+            platform=platform, ay=ay,
+            takipci=veri.get("takipci"),
+            etkilesim=veri.get("etkilesim"),
+            icerik_sayisi=veri.get("icerik_sayisi"),
+        ))
+    db.commit()
+    return {"durum": "ok"}
+
+
+@app.post("/api/scraper/icerikler")
+def scraper_icerikler_kaydet(veri: dict, request: Request, db: Session = Depends(get_db)):
+    if request.headers.get("x-scraper-secret") != SCRAPER_SECRET:
+        raise HTTPException(status_code=403)
+    platform = veri.get("platform")
+    ay = veri.get("ay")
+    icerikler = veri.get("icerikler", [])
+    # O ay platformun eski kayıtlarını sil, yeniden yaz
+    db.query(models.SosyalMedyaIcerik).filter_by(platform=platform, ay=ay).delete()
+    for ic in icerikler:
+        db.add(models.SosyalMedyaIcerik(
+            platform=platform, ay=ay,
+            icerik_id=ic.get("icerik_id"),
+            baslik=ic.get("baslik"),
+            url=ic.get("url"),
+            begeni=ic.get("begeni", 0),
+            yorum=ic.get("yorum", 0),
+            paylasim=ic.get("paylasim", 0),
+            goruntuleme=ic.get("goruntuleme", 0),
+            tarih=ic.get("tarih"),
+        ))
+    db.commit()
+    return {"durum": "ok", "kayit": len(icerikler)}
+
+
 # ───────────────────────── Statik Dosyalar ─────────────────────────
 
 # Yüklenen görselleri sun
