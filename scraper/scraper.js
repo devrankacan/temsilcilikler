@@ -10,7 +10,6 @@ chromium.use(StealthPlugin());
 
 const API_BASE       = process.env.API_BASE       || "http://api:8000";
 const SCRAPER_SECRET = process.env.SCRAPER_SECRET || "scraper-secret-key";
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "";
 
 const INSTAGRAM_HESAP = "iyilikdernegi";
 const FACEBOOK_HESAP  = "iyilikdernegi";
@@ -45,92 +44,61 @@ function sayiCoz(metin) {
   return isNaN(sayi) ? null : sayi;
 }
 
-// ─── YouTube (resmi API) ──────────────────────────────────────────
-async function youtubeVeriAl() {
+// ─── YouTube (public sayfa scraping) ─────────────────────────────
+async function youtubeVeriAl(browser) {
   const ay = suankiAy();
-  log("YouTube taranıyor...");
-
-  if (!YOUTUBE_API_KEY) {
-    log("YouTube API anahtarı tanımlı değil — sayfa scraping deneniyor.");
-    return youtubeScrap(ay);
-  }
-
+  log("YouTube taranıyor (public)...");
+  const sayfa = await browser.newPage();
   try {
-    const kanalRes = await axios.get("https://www.googleapis.com/youtube/v3/channels", {
-      params: { part: "statistics,snippet", forHandle: YOUTUBE_HANDLE, key: YOUTUBE_API_KEY },
-      timeout: 15000,
+    await sayfa.setExtraHTTPHeaders({
+      "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
     });
-    const kanal = kanalRes.data.items?.[0];
-    if (!kanal) { log("YouTube kanalı bulunamadı."); return; }
 
-    const kanalId   = kanal.id;
-    const takipci   = parseInt(kanal.statistics.subscriberCount || 0);
+    // Kanal ana sayfası → abone sayısı
+    await sayfa.goto(`https://www.youtube.com/@${YOUTUBE_HANDLE}`, { waitUntil: "networkidle", timeout: 30000 });
+    await sayfa.waitForTimeout(3000);
+    const metin = await sayfa.textContent("body").catch(() => "");
+    const eslAbone = metin.match(/([\d,.]+[KMB]?)\s*abone/i) || metin.match(/([\d,.]+[KMB]?)\s*subscriber/i);
+    const takipci  = eslAbone ? sayiCoz(eslAbone[1]) : null;
 
-    const baslangic = `${ay}-01T00:00:00Z`;
-    const sonGun    = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-    const bitis     = sonGun.toISOString();
+    // Videolar sekmesi → son videolar
+    await sayfa.goto(`https://www.youtube.com/@${YOUTUBE_HANDLE}/videos`, { waitUntil: "networkidle", timeout: 30000 });
+    await sayfa.waitForTimeout(3000);
 
-    const arama = await axios.get("https://www.googleapis.com/youtube/v3/search", {
-      params: { part: "snippet", channelId: kanalId, type: "video", order: "date",
-                maxResults: 20, publishedAfter: baslangic, publishedBefore: bitis,
-                key: YOUTUBE_API_KEY },
-      timeout: 15000,
-    });
-    const videoIds = (arama.data.items || []).map((v) => v.id.videoId).join(",");
-    let icerikler = [];
-    let toplamEtkilesim = 0;
+    const videoElemanlar = await sayfa.$$("ytd-rich-item-renderer, ytd-grid-video-renderer").catch(() => []);
+    const icerikler = [];
 
-    if (videoIds) {
-      const istatRes = await axios.get("https://www.googleapis.com/youtube/v3/videos", {
-        params: { part: "statistics,snippet", id: videoIds, key: YOUTUBE_API_KEY },
-        timeout: 15000,
-      });
-      icerikler = (istatRes.data.items || []).map((v) => {
-        const s       = v.statistics;
-        const begeni  = parseInt(s.likeCount    || 0);
-        const yorum   = parseInt(s.commentCount || 0);
-        const goruntuleme = parseInt(s.viewCount || 0);
-        toplamEtkilesim += begeni + yorum;
-        return {
-          icerik_id: v.id,
-          baslik: v.snippet.title,
-          url: `https://www.youtube.com/watch?v=${v.id}`,
-          begeni, yorum, paylasim: 0, goruntuleme,
-          tarih: v.snippet.publishedAt?.substring(0, 10),
-        };
-      });
+    for (const el of videoElemanlar.slice(0, 15)) {
+      try {
+        const baslik = await el.$eval("#video-title", (e) => e.textContent?.trim()).catch(() => "");
+        const url    = await el.$eval("#video-title", (e) => e.href).catch(() => null);
+        const meta   = await el.$eval("#metadata-line, .ytd-video-meta-block", (e) => e.textContent).catch(() => "");
+        // Görüntülenme sayısı meta içinde: "1,2B görüntülenme"
+        const gEsl   = meta.match(/([\d,.]+[KMB]?)\s*(görüntülenme|view)/i);
+        const goruntuleme = gEsl ? sayiCoz(gEsl[1]) || 0 : 0;
+        if (baslik) {
+          icerikler.push({
+            icerik_id:   url?.split("v=")[1] || `yt-${Date.now()}`,
+            baslik,
+            url:         url || `https://www.youtube.com/@${YOUTUBE_HANDLE}`,
+            begeni:      0, yorum: 0, paylasim: 0, goruntuleme,
+            tarih:       null,
+          });
+        }
+      } catch (_) {}
     }
 
+    const toplamEtkilesim = icerikler.reduce((t, ic) => t + ic.goruntuleme, 0);
     await apiyeKaydet("/api/scraper/istatistik", {
       platform: "youtube", ay, takipci, etkilesim: toplamEtkilesim, icerik_sayisi: icerikler.length,
     });
     await apiyeKaydet("/api/scraper/icerikler", { platform: "youtube", ay, icerikler });
     log(`YouTube: ${takipci} abone, ${icerikler.length} video`);
   } catch (e) {
-    log(`YouTube API hatası: ${e.message}`);
-  }
-}
-
-async function youtubeScrap(ay) {
-  // API key yoksa public sayfadan temel bilgi al
-  const browser = await chromium.launch({
-    headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-  });
-  try {
-    const sayfa = await browser.newPage();
-    await sayfa.goto(`https://www.youtube.com/@${YOUTUBE_HANDLE}`, { waitUntil: "networkidle", timeout: 30000 });
-    await sayfa.waitForTimeout(3000);
-    const metin   = await sayfa.textContent("body").catch(() => "");
-    const esl     = metin.match(/([\d,.]+[KMB]?)\s*abone/i) || metin.match(/([\d,.]+[KMB]?)\s*subscriber/i);
-    const takipci = esl ? sayiCoz(esl[1]) : null;
-    await sayfa.close();
-    await apiyeKaydet("/api/scraper/istatistik", { platform: "youtube", ay, takipci, etkilesim: 0, icerik_sayisi: 0 });
-    await apiyeKaydet("/api/scraper/icerikler",  { platform: "youtube", ay, icerikler: [] });
-    log(`YouTube (scrape): ${takipci} abone`);
-  } catch (e) {
-    log(`YouTube scrape hatası: ${e.message}`);
+    log(`YouTube hatası: ${e.message}`);
   } finally {
-    await browser.close();
+    await sayfa.close();
   }
 }
 
@@ -314,14 +282,13 @@ async function xVeriAl(browser) {
 // ─── Ana tarama ──────────────────────────────────────────────────
 async function tara() {
   log("══════ Tarama başlıyor ══════");
-  await youtubeVeriAl();
-
   const browser = await chromium.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage",
            "--disable-blink-features=AutomationControlled"],
   });
   try {
+    await youtubeVeriAl(browser);
     await instagramVeriAl(browser);
     await facebookVeriAl(browser);
     await xVeriAl(browser);
