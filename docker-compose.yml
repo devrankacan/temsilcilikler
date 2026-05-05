@@ -23,10 +23,6 @@ services:
       - API_BASE=http://api:8000
       - SCRAPER_SECRET=${SCRAPER_SECRET:-scraper-secret-key}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY:-}
-      - INSTAGRAM_KULLANICI=${INSTAGRAM_KULLANICI:-}
-      - INSTAGRAM_SIFRE=${INSTAGRAM_SIFRE:-}
-      - FACEBOOK_KULLANICI=${FACEBOOK_KULLANICI:-}
-      - FACEBOOK_SIFRE=${FACEBOOK_SIFRE:-}
     depends_on:
       - api
     networks:
