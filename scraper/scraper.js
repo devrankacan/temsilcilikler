@@ -36,10 +36,15 @@ async function apiyeKaydet(endpoint, veri) {
 
 function sayiCoz(metin) {
   if (!metin) return null;
-  // "12.5K" → 12500, "1,234" → 1234 gibi
-  const temiz = String(metin).replace(/\s/g, "");
-  if (/K$/i.test(temiz)) return Math.round(parseFloat(temiz) * 1000);
-  if (/M$/i.test(temiz)) return Math.round(parseFloat(temiz) * 1000000);
+  const temiz = String(metin).trim().replace(/\s/g, "");
+  // Türkçe: "47,9B" veya "47,9 B" → 47900 (B = Bin)
+  if (/[,.]?\d+B$/i.test(temiz)) return Math.round(parseFloat(temiz.replace(",", ".")) * 1000);
+  // Türkçe: "1,2M" veya "1,2 M" → 1200000 (M = Milyon)
+  if (/[,.]?\d+M$/i.test(temiz)) return Math.round(parseFloat(temiz.replace(",", ".")) * 1000000);
+  // İngilizce K/M
+  if (/K$/i.test(temiz)) return Math.round(parseFloat(temiz.replace(",", ".")) * 1000);
+  // Türkçe binlik ayracı: "6.094" → 6094, "47.900" → 47900
+  // Virgüllü ondalık: "1,234" → 1234
   const sayi = parseInt(temiz.replace(/[.,]/g, ""));
   return isNaN(sayi) ? null : sayi;
 }
@@ -102,43 +107,45 @@ async function youtubeVeriAl(browser) {
   }
 }
 
-// ─── Instagram (login gerektirmez — public meta) ──────────────────
+// ─── Instagram (public sayfa) ─────────────────────────────────────
 async function instagramVeriAl(browser) {
   const ay = suankiAy();
   log("Instagram taranıyor (public)...");
   const sayfa = await browser.newPage();
   try {
-    await sayfa.setExtraHTTPHeaders({
-      "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+    await sayfa.setViewportSize({ width: 1280, height: 800 });
+    await sayfa.setExtraHTTPHeaders({ "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8" });
+
+    await sayfa.goto(`https://www.instagram.com/${INSTAGRAM_HESAP}/`, {
+      waitUntil: "domcontentloaded", timeout: 30000,
     });
+    await sayfa.waitForTimeout(4000);
 
-    // Önce public API endpoint dene
     let takipci = null;
-    try {
-      const apiRes = await sayfa.goto(
-        `https://www.instagram.com/api/v1/users/web_profile_info/?username=${INSTAGRAM_HESAP}`,
-        { waitUntil: "domcontentloaded", timeout: 15000 }
-      );
-      const json = await apiRes.json().catch(() => null);
-      takipci = json?.data?.user?.edge_followed_by?.count ?? null;
-    } catch (_) {}
 
-    // Fallback: profil sayfasının meta description'ından al
-    if (takipci === null) {
-      await sayfa.goto(`https://www.instagram.com/${INSTAGRAM_HESAP}/`, { timeout: 25000 });
-      await sayfa.waitForTimeout(2500);
-      const desc = await sayfa.$eval('meta[name="description"], meta[property="og:description"]',
-        (el) => el.content).catch(() => "");
-      const esl  = desc.match(/([\d,.]+[KMB]?)\s*(Followers|Takipçi)/i);
-      if (esl) takipci = sayiCoz(esl[1]);
+    // 1) Sayfa metninde "47,9 B takipçi" kalıbını ara
+    const metin = await sayfa.textContent("body").catch(() => "");
+    const esl = metin.match(/([\d,.]+\s*[BbKkMm]?)\s*takip[çc]i/i)
+             || metin.match(/([\d,.]+\s*[BbKkMm]?)\s*[Ff]ollower/i);
+    if (esl) takipci = sayiCoz(esl[1]);
+
+    // 2) meta description fallback: "47.9K Followers"
+    if (!takipci) {
+      const desc = await sayfa.$eval('meta[property="og:description"], meta[name="description"]',
+        (el) => el.getAttribute("content")).catch(() => "");
+      const eslMeta = desc.match(/([\d,.]+[BbKkMm]?)\s*(Followers|Takipçi)/i);
+      if (eslMeta) takipci = sayiCoz(eslMeta[1]);
     }
 
+    // Gönderi sayısı
+    const gonderiEsl = metin.match(/([\d,.]+[BbKkMm]?)\s*gönderi/i);
+    const icerikSayisi = gonderiEsl ? sayiCoz(gonderiEsl[1]) : null;
+
     await apiyeKaydet("/api/scraper/istatistik", {
-      platform: "instagram", ay, takipci, etkilesim: null, icerik_sayisi: null,
+      platform: "instagram", ay, takipci, etkilesim: null, icerik_sayisi: icerikSayisi,
     });
     await apiyeKaydet("/api/scraper/icerikler", { platform: "instagram", ay, icerikler: [] });
-    log(`Instagram: ${takipci} takipçi (public, etkileşim login gerektirir)`);
+    log(`Instagram: ${takipci} takipçi, ${icerikSayisi} gönderi`);
   } catch (e) {
     log(`Instagram hatası: ${e.message}`);
   } finally {
@@ -225,21 +232,29 @@ async function xVeriAl(browser) {
       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
     });
 
-    await sayfa.goto(`https://x.com/${X_HESAP}`, { waitUntil: "networkidle", timeout: 30000 });
-    await sayfa.waitForTimeout(4000);
+    await sayfa.goto(`https://x.com/${X_HESAP}`, { waitUntil: "domcontentloaded", timeout: 30000 });
+    await sayfa.waitForTimeout(5000);
 
-    // Takipçi sayısı — birden fazla yol
     let takipci = null;
 
-    const metaDesc = await sayfa.$eval('meta[name="description"], meta[property="og:description"]',
-      (m) => m.content).catch(() => "");
-    const eslMeta = metaDesc.match(/([\d,]+)\s*Follower/i);
-    if (eslMeta) takipci = sayiCoz(eslMeta[1]);
+    // 1) Followers linki: <a href="/iyilikdernegi/followers"> içindeki sayı
+    const followerEl = await sayfa.$(`a[href="/${X_HESAP}/followers"] span`).catch(() => null);
+    if (followerEl) takipci = sayiCoz(await followerEl.textContent().catch(() => ""));
 
+    // 2) Sayfa metninde "6.094 Takipçi" kalıbı
     if (!takipci) {
-      // data-testid="UserProfileHeader_Items" içindeki follower linki
-      const followerEl = await sayfa.$('a[href$="/followers"] span span').catch(() => null);
-      if (followerEl) takipci = sayiCoz(await followerEl.textContent().catch(() => ""));
+      const metin = await sayfa.textContent("body").catch(() => "");
+      const esl = metin.match(/([\d.]+)\s*Takip[çc]i/i)
+               || metin.match(/([\d,.]+[KkMmBb]?)\s*[Ff]ollower/i);
+      if (esl) takipci = sayiCoz(esl[1]);
+    }
+
+    // 3) meta description
+    if (!takipci) {
+      const desc = await sayfa.$eval('meta[property="og:description"], meta[name="description"]',
+        (m) => m.getAttribute("content")).catch(() => "");
+      const esl = desc.match(/([\d,.]+[KkMm]?)\s*[Ff]ollower/i);
+      if (esl) takipci = sayiCoz(esl[1]);
     }
 
     // Tweetler
