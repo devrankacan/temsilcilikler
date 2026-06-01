@@ -268,10 +268,6 @@
             <input type="date" id="filtre-tarih">
           </div>
           <div class="form-alan">
-            <label>Şehir</label>
-            <input type="text" id="filtre-sehir" placeholder="Şehir adı..." style="width:150px;">
-          </div>
-          <div class="form-alan">
             <label>Temsilcilik</label>
             <select id="filtre-temsilcilik" style="width:170px;">
               <option value="">Tümü</option>
@@ -311,7 +307,7 @@
           <div class="tablo-konteyner">
             <table class="veri-tablo">
               <thead>
-                <tr><th>#</th><th>Ad Soyad</th><th>Kullanıcı Adı</th><th>Şehir</th><th>Rol</th><th>Temsilcilik</th><th>Durum</th><th></th></tr>
+                <tr><th>#</th><th>Ad Soyad</th><th>Kullanıcı Adı</th><th>Rol</th><th>Temsilcilik</th><th>Durum</th><th></th></tr>
               </thead>
               <tbody id="kullanici-tablo"></tbody>
             </table>
@@ -365,7 +361,6 @@
         </select>
       </div>
       <div id="temsilci-alanlari">
-        <div class="form-alan"><label>Şehir *</label><input type="text" id="kullanici-sehir" placeholder="İstanbul, Ankara, İzmir..."></div>
         <div class="form-alan">
           <label>Temsilcilik *</label>
           <select id="kullanici-temsilcilik"><option value="">Seçiniz...</option></select>
@@ -641,7 +636,6 @@ async function galeriInit() {
 async function galeriYukle() {
   const tarih = document.getElementById("filtre-tarih").value;
   const tid   = document.getElementById("filtre-temsilcilik").value;
-  const sehirF = document.getElementById("filtre-sehir").value.trim().toLowerCase();
   const params = {};
   if (tarih) params.tarih = tarih;
   if (tid)   params.temsilcilik_id = tid;
@@ -651,20 +645,19 @@ async function galeriYukle() {
 
   try {
     let gorseller = await API.gorseller(params);
-    if (sehirF) gorseller = gorseller.filter(g => (g.yukleyen.sehir || "").toLowerCase().includes(sehirF));
     gorsellerCache = gorseller;
     if (!gorseller.length) { el.innerHTML = '<div class="bos-durum"><div class="bos-ikn">📭</div><p>Görsel bulunamadı</p></div>'; return; }
 
-    // Gün → Şehir → Başlık
+    // Gün → Temsilcilik → Başlık
     const grup = {};
     gorseller.forEach(g => {
       const gun   = g.tarih;
-      const sehir = g.yukleyen.sehir || "Şehir Belirtilmemiş";
+      const temsilcilik = g.temsilcilik ? g.temsilcilik.ad : "Belirtilmemiş";
       const baslik = g.baslik || "Başlıksız";
       if (!grup[gun]) grup[gun] = {};
-      if (!grup[gun][sehir]) grup[gun][sehir] = {};
-      if (!grup[gun][sehir][baslik]) grup[gun][sehir][baslik] = [];
-      grup[gun][sehir][baslik].push(g);
+      if (!grup[gun][temsilcilik]) grup[gun][temsilcilik] = {};
+      if (!grup[gun][temsilcilik][baslik]) grup[gun][temsilcilik][baslik] = [];
+      grup[gun][temsilcilik][baslik].push(g);
     });
 
     el.innerHTML = Object.keys(grup).sort().reverse().map(gun => {
@@ -677,9 +670,9 @@ async function galeriYukle() {
             <span class="tarih-adet">${toplamGorsel} görsel</span>
             <div class="tarih-cizgi"></div>
           </div>
-          ${Object.entries(grup[gun]).map(([sehir, basliklar]) => `
+          ${Object.entries(grup[gun]).map(([temsilcilik, basliklar]) => `
             <div class="sehir-bolum">
-              <div class="sehir-etiketi">📍 ${sehir}</div>
+              <div class="sehir-etiketi">🏢 ${temsilcilik}</div>
               ${Object.entries(basliklar).map(([baslik, grseller]) => `
                 <div class="baslik-bolum">
                   <div class="baslik-etiketi">🏷️ ${baslik} <span class="rozet rozet-gri">${grseller.length}</span></div>
@@ -696,7 +689,6 @@ async function galeriYukle() {
 function filtreTemizle() {
   document.getElementById("filtre-tarih").value = "";
   document.getElementById("filtre-temsilcilik").value = "";
-  document.getElementById("filtre-sehir").value = "";
   galeriYukle();
 }
 
@@ -738,9 +730,11 @@ function lightboxAc(id) {
   document.getElementById("lb-baslik").textContent = g.baslik || g.orijinal_ad;
   const kb = g.boyut_bytes ? (g.boyut_bytes / 1024).toFixed(0) + " KB" : "";
   document.getElementById("lb-meta").textContent =
-    [g.tarih, g.yukleyen.sehir, g.temsilcilik.ad, g.yukleyen.ad_soyad, kb].filter(Boolean).join("  ·  ");
+    [g.tarih, g.temsilcilik.ad, g.yukleyen.ad_soyad, kb].filter(Boolean).join("  ·  ");
+  const uzanti = g.orijinal_ad.includes(".") ? g.orijinal_ad.slice(g.orijinal_ad.lastIndexOf(".")) : "";
+  const temizAd = [g.temsilcilik.ad, g.baslik || "gorsel", g.tarih].map(s => s.replace(/[^a-zA-Z0-9ğüşıöçĞÜŞİÖÇ\s\-]/g, "").trim().replace(/\s+/g, "-")).join("-");
   document.getElementById("lb-indir").href = "/uploads/" + g.dosya_yolu;
-  document.getElementById("lb-indir").download = g.orijinal_ad;
+  document.getElementById("lb-indir").download = temizAd + uzanti;
   document.getElementById("lightbox").classList.add("acik");
 }
 
@@ -861,7 +855,6 @@ async function kullanicilariYukle() {
         <td style="color:var(--metin-ucuncul);font-size:.8rem;">${k.id}</td>
         <td><strong>${k.ad_soyad}</strong></td>
         <td style="color:var(--metin-ikincil);font-size:.84rem;">${k.kullanici_adi}</td>
-        <td>${k.sehir ? `<span class="rozet rozet-mavi">${k.sehir}</span>` : "—"}</td>
         <td><span class="rozet ${k.rol === "admin" ? "rozet-sari" : "rozet-gri"}">${k.rol === "admin" ? "Yönetici" : "Temsilci"}</span></td>
         <td style="color:var(--metin-ikincil);">${k.temsilcilik ? k.temsilcilik.ad : "—"}</td>
         <td><span class="rozet ${k.aktif ? "rozet-yesil" : "rozet-gri"}">${k.aktif ? "Aktif" : "Pasif"}</span></td>
@@ -869,13 +862,13 @@ async function kullanicilariYukle() {
           <button class="btn btn-ikincil btn-sm" onclick="kullaniciDuzenle(${k.id})">Düzenle</button>
           ${k.rol !== "admin" ? `<button class="btn btn-tehlike btn-sm" style="margin-left:4px;" onclick="kullaniciSilOnay(${k.id},'${k.ad_soyad}')">Sil</button>` : ""}
         </td>
-      </tr>`).join("") || '<tr><td colspan="8"><div class="bos-durum"><p>Henüz kullanıcı yok</p></div></td></tr>';
+      </tr>`).join("") || '<tr><td colspan="7"><div class="bos-durum"><p>Henüz kullanıcı yok</p></div></td></tr>';
   } catch (e) { toast(e.message, "hata"); }
 }
 
 function kullaniciModalAc() {
   document.getElementById("kullanici-id").value = "";
-  ["kullanici-ad-soyad","kullanici-adi","kullanici-sifre","kullanici-sehir"].forEach(id => document.getElementById(id).value = "");
+  ["kullanici-ad-soyad","kullanici-adi","kullanici-sifre"].forEach(id => document.getElementById(id).value = "");
   document.getElementById("kullanici-rol").value = "temsilci";
   document.getElementById("kullanici-temsilcilik").value = "";
   document.getElementById("sifre-aciklama").textContent = "";
@@ -891,7 +884,6 @@ function kullaniciDuzenle(id) {
   document.getElementById("kullanici-ad-soyad").value = k.ad_soyad;
   document.getElementById("kullanici-adi").value = k.kullanici_adi;
   document.getElementById("kullanici-sifre").value = "";
-  document.getElementById("kullanici-sehir").value = k.sehir || "";
   document.getElementById("kullanici-rol").value = k.rol;
   document.getElementById("kullanici-temsilcilik").value = k.temsilcilik_id || "";
   document.getElementById("sifre-aciklama").textContent = "boş = değişmez";
@@ -910,14 +902,12 @@ async function kullaniciKaydet() {
   const rol = document.getElementById("kullanici-rol").value;
   const tid = document.getElementById("kullanici-temsilcilik").value;
   const sifre = document.getElementById("kullanici-sifre").value;
-  const sehir = document.getElementById("kullanici-sehir").value.trim();
 
   if (!id) {
     const veri = {
       ad_soyad: document.getElementById("kullanici-ad-soyad").value.trim(),
       kullanici_adi: document.getElementById("kullanici-adi").value.trim(),
       sifre, rol,
-      sehir: sehir || null,
       temsilcilik_id: tid ? parseInt(tid) : null,
     };
     if (!veri.ad_soyad || !veri.kullanici_adi || !veri.sifre) { toast("Zorunlu alanları doldurun", "hata"); return; }
@@ -925,7 +915,7 @@ async function kullaniciKaydet() {
     try { await API.kullaniciOlustur(veri); toast("Kullanıcı oluşturuldu"); modalKapat("kullanici-modal"); kullanicilerCache = []; kullanicilariYukle(); }
     catch (e) { toast(e.message, "hata"); }
   } else {
-    const veri = { ad_soyad: document.getElementById("kullanici-ad-soyad").value.trim(), sehir: sehir || null, temsilcilik_id: tid ? parseInt(tid) : null };
+    const veri = { ad_soyad: document.getElementById("kullanici-ad-soyad").value.trim(), temsilcilik_id: tid ? parseInt(tid) : null };
     if (sifre) veri.sifre = sifre;
     try { await API.kullaniciGuncelle(id, veri); toast("Güncellendi"); modalKapat("kullanici-modal"); kullanicilerCache = []; kullanicilariYukle(); }
     catch (e) { toast(e.message, "hata"); }

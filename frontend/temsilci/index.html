@@ -312,9 +312,8 @@ function panelAc(k) {
   document.getElementById("panel-ekrani").style.display = "flex";
 
   const ilk  = k.ad_soyad[0].toUpperCase();
-  const sehir = k.sehir || "";
   const tAdi  = k.temsilcilik ? k.temsilcilik.ad : "";
-  const detay = [sehir, tAdi].filter(Boolean).join(" · ");
+  const detay = tAdi || "";
 
   document.getElementById("kenar-avatar").textContent = ilk;
   document.getElementById("kenar-isim").textContent = k.ad_soyad;

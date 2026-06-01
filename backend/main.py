@@ -256,12 +256,12 @@ async def gorsel_yukle(
         raise HTTPException(status_code=404, detail="Temsilcilik bulunamadı")
 
     bugun = datetime.now().strftime("%Y-%m-%d")
-    sehir_adi = guvenli_klasor_adi(kullanici.sehir or "genel")
+    temsilcilik_adi = guvenli_klasor_adi(temsilcilik.ad)
     if not baslik or not baslik.strip():
         raise HTTPException(status_code=400, detail="Başlık zorunludur")
     baslik = baslik.strip()
     baslik_adi = guvenli_klasor_adi(baslik)
-    klasor = UPLOAD_DIR / bugun / sehir_adi / baslik_adi
+    klasor = UPLOAD_DIR / bugun / temsilcilik_adi / baslik_adi
     klasor.mkdir(parents=True, exist_ok=True)
 
     benzersiz_ad = f"{uuid.uuid4().hex}{uzanti}"
